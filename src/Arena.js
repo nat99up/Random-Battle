@@ -1,5 +1,5 @@
 import Board from "./Board.js"
-import SkillInterface from "./SkillInterface.js"
+import {SkillInterface,SkillType,TargetType} from "./SkillInterface.js"
 
 export default class Arena {
 
@@ -140,9 +140,9 @@ export default class Arena {
                 // skillTarget 可能為「戰鬥員」或「場地」
                 
                 combatant.skillTarget = null;
-                if(combatant.activeSkill.targetType == SkillInterface.SELF){
+                if(combatant.activeSkill.targetType == TargetType.SELF){
                     combatant.skillTarget = combatant; 
-                }else if(combatant.activeSkill.targetType == SkillInterface.ENEMY){
+                }else if(combatant.activeSkill.targetType == TargetType.ENEMY){
 
                     // 先隨機挑一個enemy target (single)
                     const targetRange = combatant.activeSkill.targetRange;

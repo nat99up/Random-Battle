@@ -1,6 +1,6 @@
 import CombatantCore from "./CombatantCore.js";
 import AnimateExecutor from "./AnimateExecutor.js";
-import SkillInterface from "./SkillInterface.js"
+import {SkillInterface} from "./SkillInterface.js"
 
 export default class Combatant extends Phaser.GameObjects.Sprite {
     constructor(config) {

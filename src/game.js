@@ -2,7 +2,6 @@ import Combatant from "./Combatant.js";
 import Arena from "./Arena.js"
 import BattleCalculator from "./BattleCalculator.js"
 
-
 var StatisticsTable = [
     {name:'原型機0號',win:0,lose:0},
     {name:'原型機1號',win:0,lose:0},

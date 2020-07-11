@@ -1,22 +1,25 @@
 
 var SkillInstaceDict = {}; // 記得註冊到SkillInstaceDict
 
-export default class SkillInterface{
+const SkillType = {
+    NONE:0,
+    STATUS_MOVE:1,
+    PHYSICAL:2,
+    MAGIC:3,
+    GEOMANCY:4,
 
-    // Skill Type
-    static NONE = 0;
-    static STATUS_MOVE = 1;
-    static PHYSICAL = 2;
-    static MAGIC = 3;
-    static GEOMANCY = 4;
+}
 
-    // Target Type
-    static NONE = 0;
-    static SELF = 1;
-    static ALLIED = 2;
-    static ENEMY = 3;
-    static AOE = 4;
-    static BOARD = 5;
+const TargetType = {
+    ZERO : 0,
+    SELF : 1,
+    ALLIED : 2,
+    ENEMY : 3,
+    AOE : 4,
+    BOARD : 5
+}
+
+class SkillInterface{
 
     constructor(activeSkillName){
 
@@ -32,9 +35,9 @@ export default class SkillInterface{
 
 const skill_治癒 = {
 
-    skillType: SkillInterface.STATUS_MOVE,
+    skillType: SkillType.STATUS_MOVE,
 
-    targetType: SkillInterface.SELF,
+    targetType: TargetType.SELF,
 
     targetRange: [[1]],
 
@@ -47,9 +50,9 @@ const skill_治癒 = {
 
 const skill_超級射程 = {
 
-    skillType: SkillInterface.STATUS_MOVE,
+    skillType: SkillType.STATUS_MOVE,
 
-    targetType: SkillInterface.SELF,
+    targetType: TargetType.SELF,
 
     targetRange: [[1]],
 
@@ -69,9 +72,9 @@ const skill_超級射程 = {
 
 const skill_武裝強化 = {
 
-    skillType: SkillInterface.STATUS_MOVE,
+    skillType: SkillType.STATUS_MOVE,
 
-    targetType: SkillInterface.SELF,
+    targetType: TargetType.SELF,
 
     targetRange: [[1]],
 
@@ -86,9 +89,9 @@ const skill_武裝強化 = {
 
 const skill_羅馬斬 = {
 
-    skillType: SkillInterface.PHYSICAL,
+    skillType: SkillType.PHYSICAL,
 
-    targetType: SkillInterface.ENEMY,
+    targetType: TargetType.ENEMY,
 
     targetRange: [
         [1,1,1],
@@ -107,9 +110,9 @@ const skill_羅馬斬 = {
 
 const skill_海盜砲 = {
 
-    skillType: SkillInterface.PHYSICAL,
+    skillType: SkillType.PHYSICAL,
 
-    targetType: SkillInterface.ENEMY,
+    targetType: TargetType.ENEMY,
 
     targetRange: [
         [1,1,1,1,1],
@@ -136,3 +139,10 @@ SkillInstaceDict = {
     'skill_羅馬斬':skill_羅馬斬,
     'skill_海盜砲':skill_海盜砲
 }
+
+export {
+    SkillInterface,
+    SkillType,
+    TargetType
+ }
+ 
