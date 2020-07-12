@@ -332,7 +332,7 @@ const lobby = {
 const config = {
     type: Phaser.AUTO,
     width: 1280,
-    height: 615,
+    height: 600,
     parent: 'app',
     scene: [
         
