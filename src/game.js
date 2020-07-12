@@ -2,29 +2,145 @@ import Combatant from "./Combatant.js";
 import Arena from "./Arena.js"
 import BattleCalculator from "./BattleCalculator.js"
 
-
-var INFINITY = false;
-
+/*
+firebase.initializeApp({
+    databaseURL: "https://randombattle-5090e.firebaseio.com/"
+});
+  
+const database = firebase.database();
+*/
 var StatisticsTable = [
     {name:'原型機0號',win:0,lose:0},
     {name:'原型機1號',win:0,lose:0},
     {name:'原型機2號',win:0,lose:0},
     {name:'角鬥士',win:0,lose:0},
     {name:'海盜船長',win:0,lose:0}
+    /* 新角色 */
 ]
+var INFINITY = false;
 
-const gameStart = {
-    key: 'gameStart',
+
+
+const lobby = {
+    key: 'lobby',
     preload: function(){
-        // 載入資源
-        this.load.json('prototype_data', './assets/datas/prototype-series.json');
+
+        this.load.image('logo','./assets/Logo.png');
+        this.load.image('sword','./assets/sword.png');
+        this.load.image('dice','./assets/dice.png');
+        this.load.image('infinity','./assets/infinity.png');
 
         // 人物圖像
         this.load.image('原型機0號','./assets/characters/Prototype_0.png');
         this.load.image('原型機1號','./assets/characters/Prototype_1.png');
         this.load.image('原型機2號','./assets/characters/Prototype_2.png');
-        this.load.image('角鬥士','./assets/characters/Gladiator.png')
-        this.load.image('海盜船長','./assets/characters/Captain.png')
+        this.load.image('角鬥士','./assets/characters/Gladiator.png');
+        this.load.image('海盜船長','./assets/characters/Captain.png');
+        /* 新角色 */
+
+        // 場地、隊伍
+        this.load.image('block', 'assets/300x300.png');
+        this.load.image('flag-team-blue','./assets/150x150-blue.png');
+        this.load.image('flag-team-red','./assets/150x150-red.png');
+    },
+
+    create: function(){
+
+        this.logo = this.add.image(640, 100, 'logo').setScale(0.5);
+        this.sword = this.add.image(400, 500, 'sword').setScale(0.5);
+        this.dice = this.add.image(880, 500, 'dice').setScale(0.5);
+        this.infinity = this.add.image(640, 500, 'infinity').setScale(0.5);
+
+        var blocks = this.add.group({ key: 'block', repeat: StatisticsTable.length-1, setScale: { x: 1/3, y: 1/3 } });
+        
+        Phaser.Actions.GridAlign(blocks.getChildren(), {
+            width: 5,
+            cellWidth: 100,
+            cellHeight: 100,
+            x: 640-100*(StatisticsTable.length+1)/2,
+            y: 150
+        });
+
+        this.roleList = new Array(StatisticsTable.length).fill(null);
+        this.roleSelected = [];
+
+        for(let i=0; i<StatisticsTable.length; i++){
+
+            let name = StatisticsTable[i].name;
+            let block  = blocks.getChildren()[i];
+            this.roleList[i] = this.add.image(block.x, block.y, name).setScale(60/256);
+            this.roleList[i].box = this.add.image(block.x, block.y, 'flag-team-blue').setScale(2/3);
+            this.roleList[i].box.visible = false;
+            this.roleList[i].selected = false;
+
+            block.setInteractive({useHandCursor: true})
+            block.on('pointerdown', () => {
+                this.roleList[i].box.visible = ! this.roleList[i].box.visible;
+                this.roleList[i].selected = ! this.roleList[i].selected;
+                
+                var index = this.roleSelected.indexOf(i)
+                if(index > -1){
+                    this.roleSelected.splice(index,1);
+                }else{
+                    this.roleSelected.push(i);
+                }
+            })
+        }
+
+        // Hand pick
+        this.sword.setInteractive({useHandCursor: true})
+        this.sword.on('pointerdown',()=>{
+            
+            if(this.roleSelected.length == 3){
+                INFINITY = false;
+                this.scene.start('gameStart',{"blueTeam":this.roleSelected});
+            }else{
+                alert('Please selected 3 Combatants');
+            }
+
+        })
+
+        // Ramdom pick
+        this.dice.setInteractive({useHandCursor: true})
+        this.dice.on('pointerdown',()=>{
+            INFINITY = false;
+            this.scene.start('gameStart');
+        })
+
+        // Infinity run
+        this.infinity.setInteractive({useHandCursor: true})
+        this.infinity.on('pointerdown',()=>{
+            INFINITY = true;
+        })
+
+        this.frameCnt = 0;
+    },
+    update: function(){
+
+        if(INFINITY && this.frameCnt > 30){
+            this.scene.start('gameStart');
+        }
+        this.frameCnt += 1;
+    }
+}
+
+
+/*===========================================================================================*/
+
+
+const gameStart = {
+    key: 'gameStart',
+    preload: function(){
+        // 載入資源
+        this.load.json('combatant_data', './assets/datas/prototype-series.json');
+
+        // 人物圖像
+        this.load.image('原型機0號','./assets/characters/Prototype_0.png');
+        this.load.image('原型機1號','./assets/characters/Prototype_1.png');
+        this.load.image('原型機2號','./assets/characters/Prototype_2.png');
+        this.load.image('角鬥士','./assets/characters/Gladiator.png');
+        this.load.image('海盜船長','./assets/characters/Captain.png');
+        /* 新角色 */
 
         // 場地、隊伍
         this.load.image('block', 'assets/300x300.png');
@@ -41,22 +157,28 @@ const gameStart = {
         this.load.spritesheet('level-down', './assets/skill/pipo-btleffect020.png', {frameWidth: 120, frameHeight: 120});
         this.load.spritesheet('chop', './assets/skill/pipo-btleffect001.png', {frameWidth: 120, frameHeight: 120});
         this.load.spritesheet('bombard', './assets/skill/pipo-btleffect003.png', {frameWidth: 120, frameHeight: 120});
-        
+        /* 新角色技能*/
     },
     init: function(data){
 
         var ramdomEnemyList = new Array(StatisticsTable.length).fill(0);
         ramdomEnemyList = ramdomEnemyList.map((x,i)=>i);
+
+        // 🚧 Under construction 🚧
+        // 之後採用隨機抓取firebase上註冊的隊伍
         ramdomEnemyList.sort(() => Math.random() - 0.5)
 
         this.b0_cid = ramdomEnemyList[0];
         this.b1_cid = ramdomEnemyList[1];
         this.b2_cid = ramdomEnemyList[2];
 
+        // 🚧 Under construction 🚧
+        // 之後採用隨機抓取firebase上註冊的隊伍
         ramdomEnemyList.sort(() => Math.random() - 0.5)
         this.r0_cid = ramdomEnemyList[0];
         this.r1_cid = ramdomEnemyList[1];
         this.r2_cid = ramdomEnemyList[2];
+
 
         // 藍方隊伍戰鬥員編號
         if(data.blueTeam){
@@ -88,7 +210,7 @@ const gameStart = {
 
         // 資源載入完成，加入遊戲物件及相關設定
         this.Arena = new Arena({scene:this, top:0, left:640-300, rows:4, cols:4, cellSize:150, key:'block'})
-        let jsonDatas = this.cache.json.get('prototype_data');
+        let jsonDatas = this.cache.json.get('combatant_data');
 
 
         // 建立戰鬥員及隊伍
@@ -206,8 +328,10 @@ const gameStart = {
                         StatisticsTable[this.r2_cid].lose += 1;
 
                     }
-                    setTimeout(()=>{this.scene.start('settlement',this.Calculator.logging),1500}) // 遊戲結束
-                     
+                    this.time.addEvent({ 
+                        delay: 1000, 
+                        callback: ()=>{this.scene.start('settlement',{'logging':this.Calculator.logging,'result':RoundResult})}, 
+                        callbackScope: this }); // 遊戲結束
                 }
                 this.Arena.RoundEnd(); // 回合結束
     
@@ -218,116 +342,17 @@ const gameStart = {
     }
 }
 
-const lobby = {
-    key: 'lobby',
-    preload: function(){
 
-        this.load.image('logo','./assets/Logo.png');
-        this.load.image('sword','./assets/sword.png');
-        this.load.image('dice','./assets/dice.png');
-        this.load.image('infinity','./assets/infinity.png');
 
-        // 載入資源
-        this.load.json('prototype_data', './assets/datas/prototype-series.json');
-
-        // 人物圖像
-        this.load.image('原型機0號','./assets/characters/Prototype_0.png');
-        this.load.image('原型機1號','./assets/characters/Prototype_1.png');
-        this.load.image('原型機2號','./assets/characters/Prototype_2.png');
-        this.load.image('角鬥士','./assets/characters/Gladiator.png')
-        this.load.image('海盜船長','./assets/characters/Captain.png')
-
-        // 場地、隊伍
-        this.load.image('block', 'assets/300x300.png');
-        this.load.image('flag-team-blue','./assets/150x150-blue.png');
-        this.load.image('flag-team-red','./assets/150x150-red.png');
-    },
-
-    create: function(){
-
-        this.logo = this.add.image(640, 100, 'logo').setScale(0.75);
-        this.sword = this.add.image(400, 500, 'sword').setScale(0.75);
-        this.dice = this.add.image(880, 500, 'dice').setScale(0.75);
-        this.infinity = this.add.image(640, 500, 'infinity').setScale(0.75);
-
-        var blocks = this.add.group({ key: 'block', repeat: StatisticsTable.length-1, setScale: { x: 0.5, y: 0.5 } });
-        
-        Phaser.Actions.GridAlign(blocks.getChildren(), {
-            width: 5,
-            cellWidth: 150,
-            cellHeight: 150,
-            x: 640-150*StatisticsTable.length/2,
-            y: 250
-        });
-
-        this.roleList = new Array(StatisticsTable.length).fill(null);
-        this.roleSelected = [];
-
-        for(let i=0; i<StatisticsTable.length; i++){
-
-            let name = StatisticsTable[i].name;
-            let block  = blocks.getChildren()[i];
-            this.roleList[i] = this.add.image(block.x, block.y, name).setScale(80/256);
-            this.roleList[i].box = this.add.image(block.x, block.y, 'flag-team-blue');
-            this.roleList[i].box.visible = false;
-            this.roleList[i].selected = false;
-
-            block.setInteractive({useHandCursor: true})
-            block.on('pointerdown', () => {
-                this.roleList[i].box.visible = ! this.roleList[i].box.visible;
-                this.roleList[i].selected = ! this.roleList[i].selected;
-                
-                var index = this.roleSelected.indexOf(i)
-                if(index > -1){
-                    this.roleSelected.splice(index,1);
-                }else{
-                    this.roleSelected.push(i);
-                }
-            })
-        }
-
-        // Hand pick
-        this.sword.setInteractive({useHandCursor: true})
-        this.sword.on('pointerdown',()=>{
-            
-            if(this.roleSelected.length == 3){
-                INFINITY = false;
-                this.scene.start('gameStart',{"buleTeam":this.roleSelected});
-            }else{
-                alert('Please selected 3 Combatants');
-            }
-
-        })
-
-        // Ramdom pick
-        this.dice.setInteractive({useHandCursor: true})
-        this.dice.on('pointerdown',()=>{
-            INFINITY = false;
-            this.scene.start('gameStart');
-        })
-
-        // Infinity run
-        this.infinity.setInteractive({useHandCursor: true})
-        this.infinity.on('pointerdown',()=>{
-            INFINITY = true;
-        })
-
-        this.frameCnt = 0;
-    },
-    update: function(){
-
-        if(INFINITY && this.frameCnt > 30){
-            this.scene.start('gameStart');
-        }
-        this.frameCnt += 1;
-    }
-}
+/*===========================================================================================*/
 
 
 const settlement = {
     key: 'settlement',
-    init: function(logging){
-        this.logging = logging;
+    init: function(data){
+        this.logging = data.logging;
+        this.result = data.result;
+        this.resultText= {'Duce':'平局！','Red':'紅方勝利！','Blue':'藍方勝利！'}
     },
     preload: function(){},
     create: function(){
@@ -335,16 +360,17 @@ const settlement = {
         const damageKingIdx = this.logging.damages.indexOf(Math.max(...this.logging.damages));
         const injureKingIdx = this.logging.injures.indexOf(Math.max(...this.logging.injures));
 
-        const damageKing = ((damageKingIdx < 2) ? '(紅)' : '(藍)') + this.logging.names[damageKingIdx];
-        const injureKing = ((injureKingIdx < 2) ? '(紅)' : '(藍)') + this.logging.names[injureKingIdx];
+        const damageKing = ((damageKingIdx < 2) ? '(紅方) ' : '(藍方) ') + this.logging.names[damageKingIdx];
+        const injureKing = ((injureKingIdx < 2) ? '(紅方) ' : '(藍方) ') + this.logging.names[injureKingIdx];
 
         const settlementText = 
-        '傷害最多 : ' + damageKing + ' --> ' + this.logging.damages[damageKingIdx] + '\n\n' + 
-        '承受最多 : ' + injureKing + ' --> ' + this.logging.injures[injureKingIdx];
+        this.resultText[this.result] + '\n\n\n' +
+        '造成傷害最多 : \n' + damageKing + ' --> ' + this.logging.damages[damageKingIdx] + '\n\n' + 
+        '承受傷害最多 : \n' + injureKing + ' --> ' + this.logging.injures[injureKingIdx];
 
         this.settlementboard = this.make.text({
-            x: 650,
-            y: 250,
+            x: 640,
+            y: 350,
             text: settlementText,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -360,8 +386,15 @@ const settlement = {
             this.scene.start('lobby');
         }
         )
+
+        this.frameCnt = 0;
     },
-    update: function(){}
+    update: function(){
+        if(this.frameCnt > 300){
+            this.scene.start('lobby');
+        }
+        this.frameCnt += 1;
+    }
 }
 
 const config = {

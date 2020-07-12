@@ -89,7 +89,7 @@ export default class AnimateExecutor{
                 repeat: 0
             })
 
-        }else{
+        }else{ /* 新角色技能 */
 
             this.skillSprite = null;
 

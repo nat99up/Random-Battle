@@ -10,8 +10,6 @@ export default class BattleCalculator {
             damages:[0,0,0,0,0,0],
             injures:[0,0,0,0,0,0]
         }
-
-        
     }
 
     battle(atker,defer){
@@ -25,7 +23,6 @@ export default class BattleCalculator {
         this.logging.damages[this.logIdx[atker.arenaId]] += BaseDamage;
         this.logging.injures[this.logIdx[defer.arenaId]] += BaseDamage;
         
-
     }
 
     effect(provider,receiver){
@@ -55,6 +52,8 @@ export default class BattleCalculator {
     ApplySkill(){
         this.combatants.forEach(combatant => {
             if(combatant.battleAction == 'skill'){
+
+                // skillTarget ==> receiver
                 this.effect(combatant,combatant.skillTarget);
             }
         })

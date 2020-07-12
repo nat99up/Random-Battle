@@ -131,6 +131,9 @@ const skill_海盜砲 = {
 
 }
 
+/* 新角色技能 */
+const skill_新角色技能 = {};
+
 // 註冊技能實例
 SkillInstaceDict = {
     'skill_治癒':skill_治癒,
@@ -138,6 +141,7 @@ SkillInstaceDict = {
     'skill_武裝強化':skill_武裝強化,
     'skill_羅馬斬':skill_羅馬斬,
     'skill_海盜砲':skill_海盜砲
+    /* 新角色 */
 }
 
 export {
