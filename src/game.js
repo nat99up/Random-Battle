@@ -3,6 +3,8 @@ import Arena from "./Arena.js"
 import BattleCalculator from "./BattleCalculator.js"
 
 
+var INFINITY = false;
+
 var StatisticsTable = [
     {name:'原型機0號',win:0,lose:0},
     {name:'原型機1號',win:0,lose:0},
@@ -10,8 +12,6 @@ var StatisticsTable = [
     {name:'角鬥士',win:0,lose:0},
     {name:'海盜船長',win:0,lose:0}
 ]
-
-var INFINITY = false;
 
 const gameStart = {
     key: 'gameStart',
@@ -124,11 +124,6 @@ const gameStart = {
 
         var leaderboardTexts = new Array(jsonDatas.length).fill(0)
 
-
-        StatisticsTable.sort((a,b)=>{
-            return a.win/(a.win+a.lose) > b.win/(b.win+b.lose);
-        });
-
         leaderboardTexts = leaderboardTexts.map((x,i)=>{
 
             const name = StatisticsTable[i].name;
@@ -163,7 +158,7 @@ const gameStart = {
             this.frameCnt += 1
             return;
         }
-   
+
         if(this.frameCnt == this.FIND_DIST_FRAME){
 
             this.roundCnt += 1;
@@ -211,8 +206,8 @@ const gameStart = {
                         StatisticsTable[this.r2_cid].lose += 1;
 
                     }
-
-                    this.scene.start('lobby'); // 遊戲結束
+                    setTimeout(()=>{this.scene.start('settlement',this.Calculator.logging),1500}) // 遊戲結束
+                     
                 }
                 this.Arena.RoundEnd(); // 回合結束
     
@@ -288,7 +283,6 @@ const lobby = {
                 }else{
                     this.roleSelected.push(i);
                 }
-                
             })
         }
 
@@ -329,6 +323,47 @@ const lobby = {
     }
 }
 
+
+const settlement = {
+    key: 'settlement',
+    init: function(logging){
+        this.logging = logging;
+    },
+    preload: function(){},
+    create: function(){
+
+        const damageKingIdx = this.logging.damages.indexOf(Math.max(...this.logging.damages));
+        const injureKingIdx = this.logging.injures.indexOf(Math.max(...this.logging.injures));
+
+        const damageKing = ((damageKingIdx < 2) ? '(紅)' : '(藍)') + this.logging.names[damageKingIdx];
+        const injureKing = ((injureKingIdx < 2) ? '(紅)' : '(藍)') + this.logging.names[injureKingIdx];
+
+        const settlementText = 
+        '傷害最多 : ' + damageKing + ' --> ' + this.logging.damages[damageKingIdx] + '\n\n' + 
+        '承受最多 : ' + injureKing + ' --> ' + this.logging.injures[injureKingIdx];
+
+        this.settlementboard = this.make.text({
+            x: 650,
+            y: 250,
+            text: settlementText,
+            origin: { x: 1.0, y: 1.0 },
+            style: {
+                font: 'bold 20px Arial',
+                fill: 'white',
+                align: 'left',
+                wordWrap: { width: 300 }
+            }
+        });
+
+        this.settlementboard.setInteractive({useHandCursor: true})
+        this.settlementboard.on('pointerdown', () => {
+            this.scene.start('lobby');
+        }
+        )
+    },
+    update: function(){}
+}
+
 const config = {
     type: Phaser.AUTO,
     width: 1280,
@@ -338,6 +373,7 @@ const config = {
         
         lobby,
         gameStart,
+        settlement,
         
     ]
 }

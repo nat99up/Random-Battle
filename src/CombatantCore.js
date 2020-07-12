@@ -2,6 +2,7 @@ export default class CombatantCore{
 
     constructor(data) {
         
+        this.name = data.name;
         this.hp = data.hp;
         this.mp = data.mp;
         this.atk = data.atk;
