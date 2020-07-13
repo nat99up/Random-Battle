@@ -46,10 +46,10 @@ const lobby = {
     create: function(){
 
         this.logo = this.add.image(640, 100, 'logo').setScale(0.5);
-        this.sword = this.add.image(400, 480, 'sword').setScale(0.5);
-        this.dice = this.add.image(720, 480, 'dice').setScale(0.5);
-        this.leaderboard = this.add.image(560, 480, 'leaderboard').setScale(0.5);
-        this.team_setting = this.add.image(880, 480, 'team-setting').setScale(0.5);
+        this.sword = this.add.image(400, 450, 'sword').setScale(0.5);
+        this.dice = this.add.image(720, 450, 'dice').setScale(0.5);
+        this.leaderboard = this.add.image(560, 450, 'leaderboard').setScale(0.5);
+        this.team_setting = this.add.image(880, 450, 'team-setting').setScale(0.5);
 
         var blocks = this.add.group({ key: 'block', repeat: RegisterList.length-1, setScale: { x: 1/3, y: 1/3 } });
         
@@ -58,7 +58,7 @@ const lobby = {
             cellWidth: 100,
             cellHeight: 100,
             x: 640-300,
-            y: 150
+            y: 120
         });
 
         this.roleList = new Array(RegisterList.length).fill(null);
@@ -88,7 +88,7 @@ const lobby = {
         // 隊伍名稱顯示
         this.teamIDText = this.make.text({
             x: 1100,
-            y: 580,
+            y: 500,
             text: 'Team ID : ' + LOCAL_TEAM_ID,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -105,6 +105,7 @@ const lobby = {
         
             if(LOCAL_TEAM_ID == null || LOCAL_TEAM_ID[0] == '_'){
                 alert('未輸入或含有非法字元(_)')
+                OCAL_TEAM_ID = "Guest";
                 return ;
             }
 
@@ -250,7 +251,7 @@ const gameStart = {
         this.roundCnt = 0;
 
         // 資源載入完成，加入遊戲物件及相關設定
-        this.Arena = new Arena({scene:this, top:20, left:640-300, rows:4, cols:4, cellSize:150, key:'block'})
+        this.Arena = new Arena({scene:this, top:20, left:640-250, rows:4, cols:4, cellSize:100, key:'block'})
         let jsonDatas = this.cache.json.get('combatant_data');
 
         // 建立戰鬥員及隊伍
@@ -271,7 +272,7 @@ const gameStart = {
 
         // 計分表
         this.timerboard = this.make.text({
-            x: 200,
+            x: 350,
             y: 150,
             text: 'Round 0',
             origin: { x: 1.0, y: 1.0 },
@@ -283,8 +284,8 @@ const gameStart = {
         });
 
         this.redTeamText = this.make.text({
-            x: 250,
-            y: 350,
+            x: 400,
+            y: 300,
             text: this.redTeamId,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -296,8 +297,8 @@ const gameStart = {
         });
 
         this.verseText = this.make.text({
-            x: 250,
-            y: 400,
+            x: 400,
+            y: 350,
             text: 'V.S.',
             origin: { x: 1.0, y: 1.0 },
             align: 'center',
@@ -309,8 +310,8 @@ const gameStart = {
         });
 
         this.blueTeamText = this.make.text({
-            x: 250,
-            y: 450,
+            x: 400,
+            y: 400,
             text: this.blueTeamId,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -502,7 +503,7 @@ const settlement = {
 const config = {
     type: Phaser.AUTO,
     width: 1280,
-    height: 640,
+    height: 615,
     parent: 'app',
     scene: [
         

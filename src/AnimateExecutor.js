@@ -13,7 +13,7 @@ export default class AnimateExecutor{
         // 普攻
         if(this.combatant.core.attackMode == 'sniper'){
 
-            this.gunSpark = this.scene.add.sprite(this.combatant.x, this.combatant.y, 'gun-spark').setScale(1.5)
+            this.gunSpark = this.scene.add.sprite(this.combatant.x, this.combatant.y, 'gun-spark').setScale(1.2)
             this.gunSpark.visible = false;
             this.scene.anims.create({
                 key: 'gun-sparking',

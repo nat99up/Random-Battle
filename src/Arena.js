@@ -28,7 +28,8 @@ export default class Arena {
         for(let i=0; i<this.rows; i++){
             for(let j=0; j<this.cols; j++){
                 let block = blocks.getChildren()[i*this.cols+j];
-                this.boards[i][j] = new Board({y:this.top+(i+0.5)*this.cellSize, x:this.left+(j+0.5)*this.cellSize, block:block});
+                //this.boards[i][j] = new Board({y:this.top+(i+0.5)*this.cellSize, x:this.left+(j+0.5)*this.cellSize, block:block});
+                this.boards[i][j] = new Board({y:block.y, x:block.x, block:block});
             }
         }
 

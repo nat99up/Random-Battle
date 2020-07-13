@@ -4,7 +4,7 @@ import {SkillInterface} from "./SkillInterface.js"
 
 export default class Combatant extends Phaser.GameObjects.Sprite {
     constructor(config) {
-        super(config.scene, 400, 200, config.data.name).setScale(80/256);
+        super(config.scene, 400, 200, config.data.name).setScale(60/256);
         config.scene.add.existing(this);
         
         this.scene = config.scene;
@@ -19,12 +19,13 @@ export default class Combatant extends Phaser.GameObjects.Sprite {
 
         this.battleAction = 'idle';
 
+
     }
 
     set x(val){
         if(this.hp){
-            this.hp.x = val-40;
-            this.mp.x = val-40;
+            this.hp.x = val-30;
+            this.mp.x = val-30;
         }
         if(this.teamFlag){
             this.teamFlag.x = val;
@@ -38,8 +39,8 @@ export default class Combatant extends Phaser.GameObjects.Sprite {
 
     set y(val){
         if(this.hp){
-            this.hp.y = val+44;
-            this.mp.y = val+54;
+            this.hp.y = val+29;
+            this.mp.y = val+37;
             this.hp.draw()
             this.mp.draw()
         }
@@ -55,9 +56,9 @@ export default class Combatant extends Phaser.GameObjects.Sprite {
 
     setTeam(team){
         if(team == 'blue'){
-            this.teamFlag = this.scene.add.image(this.x, this.y, 'flag-team-blue').setScale(137/150);
+            this.teamFlag = this.scene.add.image(this.x, this.y, 'flag-team-blue').setScale(95/150);
         }else if(team == 'red'){
-            this.teamFlag = this.scene.add.image(this.x, this.y, 'flag-team-red').setScale(137/150);
+            this.teamFlag = this.scene.add.image(this.x, this.y, 'flag-team-red').setScale(95/150);
         }else{
             console.log('Input of setTeam() is wrong!');
         }
@@ -83,7 +84,7 @@ class StatusBar {
         this.y = 0;
         this.max = max
         this.value = (status=='hp') ? max : 0;
-        this.p = 76 / this.max;
+        this.p = 57 / this.max;
 
         this.highColor = (status=='hp') ? 0x00ff00 : 0x5599ff;
         this.lowColor = (status=='hp') ? 0xff0000 : 0x5599ff;
@@ -116,11 +117,11 @@ class StatusBar {
 
         //  BG
         this.bar.fillStyle(0x000000);
-        this.bar.fillRect(this.x, this.y, 80, 8);
+        this.bar.fillRect(this.x, this.y, 60, 8);
 
         //  Health
         this.bar.fillStyle(0xffffff);
-        this.bar.fillRect(this.x + 2, this.y + 2, 76, 4);
+        this.bar.fillRect(this.x + 2, this.y + 2, 57, 4);
 
         if (this.value < this.max*0.3)
         {
