@@ -1,24 +1,21 @@
 import Combatant from "./Combatant.js";
 import Arena from "./Arena.js"
 import BattleCalculator from "./BattleCalculator.js"
+import {getDatabaseContent,getTeamData,membersToTeamArray,setTeamData,pickOpponent,uploadGameResult} from "./Cloudbase.js"
 
-/*
-firebase.initializeApp({
-    databaseURL: "https://randombattle-5090e.firebaseio.com/"
-});
-  
-const database = firebase.database();
-*/
-var StatisticsTable = [
-    {name:'原型機0號',win:0,lose:0},
-    {name:'原型機1號',win:0,lose:0},
-    {name:'原型機2號',win:0,lose:0},
-    {name:'角鬥士',win:0,lose:0},
-    {name:'海盜船長',win:0,lose:0},
-    {name:'怪鳥比莉',win:0,lose:0}
-    
+var RegisterList = [
+    '原型機0號',
+    '原型機1號',
+    '原型機2號',
+    '角鬥士',
+    '海盜船長',
+    '怪鳥比莉'
     /* 新角色 */
 ]
+
+//var LOCAL_TEAM_ID = localStorage.getItem('LOCAL_TEAM_ID') ? localStorage.getItem('LOCAL_TEAM_ID') : 'Guest';
+var LOCAL_TEAM_ID = 'Guest'
+var LOCAL_TEAM = [];
 var INFINITY = false;
 
 
@@ -30,6 +27,7 @@ const lobby = {
         this.load.image('sword','./assets/sword.png');
         this.load.image('dice','./assets/dice.png');
         this.load.image('infinity','./assets/infinity.png');
+        this.load.image('team-setting','./assets/team-setting.png')
 
         // 人物圖像
         this.load.image('原型機0號','./assets/characters/Prototype_0.png');
@@ -49,11 +47,12 @@ const lobby = {
     create: function(){
 
         this.logo = this.add.image(640, 100, 'logo').setScale(0.5);
-        this.sword = this.add.image(400, 500, 'sword').setScale(0.5);
-        this.dice = this.add.image(880, 500, 'dice').setScale(0.5);
-        this.infinity = this.add.image(640, 500, 'infinity').setScale(0.5);
+        this.sword = this.add.image(400, 480, 'sword').setScale(0.5);
+        this.dice = this.add.image(720, 480, 'dice').setScale(0.5);
+        this.infinity = this.add.image(560, 480, 'infinity').setScale(0.5);
+        this.team_setting = this.add.image(880, 480, 'team-setting').setScale(0.5);
 
-        var blocks = this.add.group({ key: 'block', repeat: StatisticsTable.length-1, setScale: { x: 1/3, y: 1/3 } });
+        var blocks = this.add.group({ key: 'block', repeat: RegisterList.length-1, setScale: { x: 1/3, y: 1/3 } });
         
         Phaser.Actions.GridAlign(blocks.getChildren(), {
             width: 5,
@@ -63,54 +62,100 @@ const lobby = {
             y: 150
         });
 
-        this.roleList = new Array(StatisticsTable.length).fill(null);
-        this.roleSelected = [];
+        this.roleList = new Array(RegisterList.length).fill(null);
 
-        for(let i=0; i<StatisticsTable.length; i++){
+        for(let i=0; i<RegisterList.length; i++){
 
-            let name = StatisticsTable[i].name;
+            let name = RegisterList[i];
             let block  = blocks.getChildren()[i];
             this.roleList[i] = this.add.image(block.x, block.y, name).setScale(60/256);
             this.roleList[i].box = this.add.image(block.x, block.y, 'flag-team-blue').setScale(2/3);
-            this.roleList[i].box.visible = false;
-            this.roleList[i].selected = false;
+
+            this.roleList[i].box.visible = LOCAL_TEAM.includes(i);
 
             block.setInteractive({useHandCursor: true})
             block.on('pointerdown', () => {
                 this.roleList[i].box.visible = ! this.roleList[i].box.visible;
-                this.roleList[i].selected = ! this.roleList[i].selected;
-                
-                var index = this.roleSelected.indexOf(i)
+                var index = LOCAL_TEAM.indexOf(i)
                 if(index > -1){
-                    this.roleSelected.splice(index,1);
+                    LOCAL_TEAM.splice(index,1);
                 }else{
-                    this.roleSelected.push(i);
+                    LOCAL_TEAM.push(i);
                 }
             })
         }
 
+        // 隊伍認證相關
+        // 隊伍名稱顯示
+        this.teamIDText = this.make.text({
+            x: 1100,
+            y: 575,
+            text: 'Team ID : ' + LOCAL_TEAM_ID,
+            origin: { x: 1.0, y: 1.0 },
+            style: {
+                font: 'bold 16px Arial',
+                fill: 'white',
+            }
+        });
+
+        // Team id setting
+        this.team_setting.setInteractive({useHandCursor: true})
+        this.team_setting.on('pointerdown',()=>{
+            LOCAL_TEAM_ID = prompt("請輸入隊伍ID:", "GUEST");
+            this.teamIDText.text = 'Team ID : ' + LOCAL_TEAM_ID;
+
+            const teamData = getTeamData(LOCAL_TEAM_ID)
+
+            if(teamData){
+                LOCAL_TEAM = membersToTeamArray(teamData.members)
+                console.log(LOCAL_TEAM_ID,'is exist',LOCAL_TEAM);
+
+                for(let i=0; i<RegisterList.length; i++){
+                    this.roleList[i].box.visible = LOCAL_TEAM.includes(i);
+                }
+                localStorage.setItem("LOCAL_TEAM_ID", LOCAL_TEAM_ID);
+
+            }else{
+
+                LOCAL_TEAM = [];
+                console.log(LOCAL_TEAM_ID,'is not exist');
+            }
+        })
+
+
         // Hand pick
         this.sword.setInteractive({useHandCursor: true})
         this.sword.on('pointerdown',()=>{
-            
-            if(this.roleSelected.length == 3){
-                INFINITY = false;
-                this.scene.start('gameStart',{"blueTeam":this.roleSelected});
+
+            INFINITY = false;
+
+            let a = getDatabaseContent();
+            if( a == false){
+                alert('Connecting....')
+                return ;
+            }
+            if(LOCAL_TEAM.length == 3){ 
+
+                setTeamData(LOCAL_TEAM_ID,LOCAL_TEAM);
+                this.scene.start('gameStart',{
+                    "blueTeamID":LOCAL_TEAM_ID,
+                    "blueTeam":LOCAL_TEAM
+                });
+
             }else{
                 alert('Please selected 3 Combatants');
             }
-
         })
 
         // Ramdom pick
-        this.dice.setInteractive({useHandCursor: true})
+        //this.dice.setInteractive({useHandCursor: true})
         this.dice.on('pointerdown',()=>{
             INFINITY = false;
             this.scene.start('gameStart');
         })
 
         // Infinity run
-        this.infinity.setInteractive({useHandCursor: true})
+        //this.infinity.setInteractive({useHandCursor: true})
         this.infinity.on('pointerdown',()=>{
             INFINITY = true;
         })
@@ -118,7 +163,6 @@ const lobby = {
         this.frameCnt = 0;
     },
     update: function(){
-
         if(INFINITY && this.frameCnt > 30){
             this.scene.start('gameStart');
         }
@@ -165,39 +209,20 @@ const gameStart = {
     },
     init: function(data){
 
-        var ramdomEnemyList = new Array(StatisticsTable.length).fill(0);
+        var ramdomEnemyList = new Array(RegisterList.length).fill(0);
         ramdomEnemyList = ramdomEnemyList.map((x,i)=>i);
 
-        // 🚧 Under construction 🚧
-        // 之後採用隨機抓取firebase上註冊的隊伍
-        ramdomEnemyList.sort(() => Math.random() - 0.5)
+        if(data.blueTeamID){
 
-        this.b0_cid = ramdomEnemyList[0];
-        this.b1_cid = ramdomEnemyList[1];
-        this.b2_cid = ramdomEnemyList[2];
+            this.blueTeamId = data.blueTeamID;
+            this.blueTeamArray = data.blueTeam;
 
-        // 🚧 Under construction 🚧
-        // 之後採用隨機抓取firebase上註冊的隊伍
-        ramdomEnemyList.sort(() => Math.random() - 0.5)
-        this.r0_cid = ramdomEnemyList[0];
-        this.r1_cid = ramdomEnemyList[1];
-        this.r2_cid = ramdomEnemyList[2];
+            const redTeamData = pickOpponent(data.blueTeamID);
 
-
-        // 藍方隊伍戰鬥員編號
-        if(data.blueTeam){
-            this.b0_cid = data.blueTeam[0];
-            this.b1_cid = data.blueTeam[1];
-            this.b2_cid = data.blueTeam[2];
-        }
-
-        // 紅方隊伍戰鬥員編號
-        if(data.redTeam){
-            this.r0_cid = data.redTeam[0];
-            this.r1_cid = data.redTeam[1];
-            this.r2_cid = data.redTeam[2];            
-        }
-        
+            this.redTeamId = redTeamData.id;
+            this.redTeamArray = redTeamData.array;
+            
+        }        
 
     }
     ,
@@ -219,21 +244,19 @@ const gameStart = {
 
         // 建立戰鬥員及隊伍
         this.teamRed = new Array();
-        
-        this.teamRed.push(new Combatant({scene:this, data:jsonDatas[this.r0_cid]}));
-        this.teamRed.push(new Combatant({scene:this, data:jsonDatas[this.r1_cid]}));
-        this.teamRed.push(new Combatant({scene:this, data:jsonDatas[this.r2_cid]}));
+        this.teamRed.push(new Combatant({scene:this, data:jsonDatas[this.redTeamArray[0]]}));
+        this.teamRed.push(new Combatant({scene:this, data:jsonDatas[this.redTeamArray[1]]}));
+        this.teamRed.push(new Combatant({scene:this, data:jsonDatas[this.redTeamArray[2]]}));
 
         this.teamBlue = new Array();
-        this.teamBlue.push(new Combatant({scene:this, data:jsonDatas[this.b0_cid]}));
-        this.teamBlue.push(new Combatant({scene:this, data:jsonDatas[this.b1_cid]}));
-        this.teamBlue.push(new Combatant({scene:this, data:jsonDatas[this.b2_cid]}));
+        this.teamBlue.push(new Combatant({scene:this, data:jsonDatas[this.blueTeamArray[0]]}));
+        this.teamBlue.push(new Combatant({scene:this, data:jsonDatas[this.blueTeamArray[1]]}));
+        this.teamBlue.push(new Combatant({scene:this, data:jsonDatas[this.blueTeamArray[2]]}));
         
         
         // 加入戰隊
         this.Arena.addTeams(this.teamRed,this.teamBlue);
         this.Calculator = new BattleCalculator(this.teamRed,this.teamBlue);
-
 
         // 計分表
         this.scoreboard = this.make.text({
@@ -244,33 +267,6 @@ const gameStart = {
             style: {
                 font: 'bold 25px Arial',
                 fill: 'white',
-                wordWrap: { width: 300 }
-            }
-        });
-
-        var leaderboardTexts = new Array(jsonDatas.length).fill(0)
-
-        leaderboardTexts = leaderboardTexts.map((x,i)=>{
-
-            const name = StatisticsTable[i].name;
-            const w = StatisticsTable[i].win;
-            const l = StatisticsTable[i].lose;
-
-            var r = w/(w+l)*100;
-            r = r.toFixed(2);
-
-            return  name+' : '+ r + '% ( '+w+' / '+(w+l)+' )';
-        })
-
-        this.leaderboard = this.make.text({
-            x: 1200,
-            y: 250,
-            text: leaderboardTexts.join('\n\n'),
-            origin: { x: 1.0, y: 1.0 },
-            style: {
-                font: 'bold 16px Arial',
-                fill: 'white',
-                align: 'left',
                 wordWrap: { width: 300 }
             }
         });
@@ -315,23 +311,13 @@ const gameStart = {
     
                 var RoundResult = this.Arena.CleanUp(); // 清理戰場
                 if(RoundResult != 'Next'){
-                    if (RoundResult == 'Red'){
-                        StatisticsTable[this.r0_cid].win += 1;
-                        StatisticsTable[this.r1_cid].win += 1;
-                        StatisticsTable[this.r2_cid].win += 1;
-                        StatisticsTable[this.b0_cid].lose += 1;
-                        StatisticsTable[this.b1_cid].lose += 1;
-                        StatisticsTable[this.b2_cid].lose += 1;
-                        
-                    }else if(RoundResult == 'Blue'){
-                        StatisticsTable[this.b0_cid].win += 1;
-                        StatisticsTable[this.b1_cid].win += 1;
-                        StatisticsTable[this.b2_cid].win += 1;
-                        StatisticsTable[this.r0_cid].lose += 1;
-                        StatisticsTable[this.r1_cid].lose += 1;
-                        StatisticsTable[this.r2_cid].lose += 1;
 
+                    if (RoundResult == 'Red'){
+                        uploadGameResult(this.redTeamId,this.blueTeamID)
+                    }else if(RoundResult == 'Blue'){
+                        uploadGameResult(this.blueTeamId,this.redTeamID)
                     }
+
                     this.time.addEvent({ 
                         delay: 1000, 
                         callback: ()=>{this.scene.start('settlement',{'logging':this.Calculator.logging,'result':RoundResult})}, 
