@@ -21,6 +21,11 @@ var promise = database.ref('/').on('value',result=>{
 
     setTeamData = (teamId,teamArray)=>{
 
+        if(teamId == 'Guest'){
+            // 訪客陣容不紀錄
+            return ;
+        }
+
         let members = teamArrayToMembers(teamArray);
         if(baseData.teams[teamId]){
             database.ref('/teams/' + teamId).update({members:members});
@@ -30,10 +35,28 @@ var promise = database.ref('/').on('value',result=>{
     }
 
     pickOpponent = (myTeamId)=>{
-        const OpponentTidArray = Object.keys(baseData.teams).filter( tid=>tid!=myTeamId)
+        const OpponentTidArray = Object.keys(baseData.teams).filter( tid=>tid!=myTeamId && tid != 'Guest')
         const idx = Math.floor(Math.random() * OpponentTidArray.length);
 
         return {id:OpponentTidArray[idx],array:membersToTeamArray(baseData.teams[OpponentTidArray[idx]].members)}
+    }
+
+    uploadGameResult = (winnerTeamId,loserTeamId) => {
+
+        if(winnerTeamId == 'Guest' || loserTeamId == 'Guest'){
+            // 訪客對戰不紀錄
+            return ;
+        }
+
+        database.ref('/teams/' + winnerTeamId + '/win').transaction(function(win){
+            return win + 1;
+        });
+
+        database.ref('/teams/' + loserTeamId + '/lose').transaction(function(lose){
+            return lose + 1;
+        });
+
+        
     }
 });
 

@@ -16,7 +16,6 @@ var RegisterList = [
 //var LOCAL_TEAM_ID = localStorage.getItem('LOCAL_TEAM_ID') ? localStorage.getItem('LOCAL_TEAM_ID') : 'Guest';
 var LOCAL_TEAM_ID = 'Guest'
 var LOCAL_TEAM = [];
-var INFINITY = false;
 
 
 const lobby = {
@@ -26,7 +25,7 @@ const lobby = {
         this.load.image('logo','./assets/Logo.png');
         this.load.image('sword','./assets/sword.png');
         this.load.image('dice','./assets/dice.png');
-        this.load.image('infinity','./assets/infinity.png');
+        this.load.image('leaderboard','./assets/leaderboard.png');
         this.load.image('team-setting','./assets/team-setting.png')
 
         // 人物圖像
@@ -49,7 +48,7 @@ const lobby = {
         this.logo = this.add.image(640, 100, 'logo').setScale(0.5);
         this.sword = this.add.image(400, 480, 'sword').setScale(0.5);
         this.dice = this.add.image(720, 480, 'dice').setScale(0.5);
-        this.infinity = this.add.image(560, 480, 'infinity').setScale(0.5);
+        this.leaderboard = this.add.image(560, 480, 'leaderboard').setScale(0.5);
         this.team_setting = this.add.image(880, 480, 'team-setting').setScale(0.5);
 
         var blocks = this.add.group({ key: 'block', repeat: RegisterList.length-1, setScale: { x: 1/3, y: 1/3 } });
@@ -101,7 +100,14 @@ const lobby = {
         // Team id setting
         this.team_setting.setInteractive({useHandCursor: true})
         this.team_setting.on('pointerdown',()=>{
-            LOCAL_TEAM_ID = prompt("請輸入隊伍ID:", "GUEST");
+            
+            LOCAL_TEAM_ID = prompt("請輸入隊伍ID:", "Guest");
+        
+            if(LOCAL_TEAM_ID == null || LOCAL_TEAM_ID[0] == '_'){
+                alert('未輸入或含有非法字元(_)')
+                return ;
+            }
+
             this.teamIDText.text = 'Team ID : ' + LOCAL_TEAM_ID;
 
             const teamData = getTeamData(LOCAL_TEAM_ID)
@@ -127,8 +133,6 @@ const lobby = {
         this.sword.setInteractive({useHandCursor: true})
         this.sword.on('pointerdown',()=>{
 
-            INFINITY = false;
-
             let a = getDatabaseContent();
             if( a == false){
                 alert('Connecting....')
@@ -138,7 +142,7 @@ const lobby = {
 
                 setTeamData(LOCAL_TEAM_ID,LOCAL_TEAM);
                 this.scene.start('gameStart',{
-                    "blueTeamID":LOCAL_TEAM_ID,
+                    "blueTeamId":LOCAL_TEAM_ID,
                     "blueTeam":LOCAL_TEAM
                 });
 
@@ -148,24 +152,38 @@ const lobby = {
         })
 
         // Ramdom pick
-        //this.dice.setInteractive({useHandCursor: true})
+        this.dice.setInteractive({useHandCursor: true})
         this.dice.on('pointerdown',()=>{
-            INFINITY = false;
-            this.scene.start('gameStart');
+            let a = getDatabaseContent();
+            if( a == false){
+                alert('Connecting....')
+                return ;
+            }
+            const blueTeamData = pickOpponent('Guest');
+            this.scene.start('gameStart',{
+                "blueTeamId":blueTeamData.id,
+                "blueTeam":blueTeamData.array
+            });
         })
 
-        // Infinity run
-        //this.infinity.setInteractive({useHandCursor: true})
-        this.infinity.on('pointerdown',()=>{
-            INFINITY = true;
+        // Leaderboard page
+        this.leaderboard.setInteractive({useHandCursor: true})
+        this.leaderboard.on('pointerdown',()=>{
+            let a = getDatabaseContent();
+            if( a == false){
+                alert('Connecting....')
+                return ;
+            }
+            this.scene.start('leaderboard',{
+                databaseContent:a,
+            });
+
         })
 
         this.frameCnt = 0;
     },
     update: function(){
-        if(INFINITY && this.frameCnt > 30){
-            this.scene.start('gameStart');
-        }
+
         this.frameCnt += 1;
     }
 }
@@ -209,20 +227,14 @@ const gameStart = {
     },
     init: function(data){
 
-        var ramdomEnemyList = new Array(RegisterList.length).fill(0);
-        ramdomEnemyList = ramdomEnemyList.map((x,i)=>i);
+    
+        this.blueTeamId = data.blueTeamId;
+        this.blueTeamArray = data.blueTeam;
 
-        if(data.blueTeamID){
+        const redTeamData = pickOpponent(data.blueTeamId);
 
-            this.blueTeamId = data.blueTeamID;
-            this.blueTeamArray = data.blueTeam;
-
-            const redTeamData = pickOpponent(data.blueTeamID);
-
-            this.redTeamId = redTeamData.id;
-            this.redTeamArray = redTeamData.array;
-            
-        }        
+        this.redTeamId = redTeamData.id;
+        this.redTeamArray = redTeamData.array;
 
     }
     ,
@@ -241,7 +253,6 @@ const gameStart = {
         this.Arena = new Arena({scene:this, top:0, left:640-300, rows:4, cols:4, cellSize:150, key:'block'})
         let jsonDatas = this.cache.json.get('combatant_data');
 
-
         // 建立戰鬥員及隊伍
         this.teamRed = new Array();
         this.teamRed.push(new Combatant({scene:this, data:jsonDatas[this.redTeamArray[0]]}));
@@ -259,7 +270,7 @@ const gameStart = {
         this.Calculator = new BattleCalculator(this.teamRed,this.teamBlue);
 
         // 計分表
-        this.scoreboard = this.make.text({
+        this.timerboard = this.make.text({
             x: 200,
             y: 100,
             text: 'Round 0',
@@ -267,6 +278,45 @@ const gameStart = {
             style: {
                 font: 'bold 25px Arial',
                 fill: 'white',
+                wordWrap: { width: 300 }
+            }
+        });
+
+        this.redTeamText = this.make.text({
+            x: 250,
+            y: 300,
+            text: this.redTeamId,
+            origin: { x: 1.0, y: 1.0 },
+            style: {
+                font: 'bold 25px Arial',
+                fill: 'red',
+                align: 'center',
+                wordWrap: { width: 300 }
+            }
+        });
+
+        this.verseText = this.make.text({
+            x: 250,
+            y: 350,
+            text: 'V.S.',
+            origin: { x: 1.0, y: 1.0 },
+            align: 'center',
+            style: {
+                font: 'bold 20px Arial',
+                fill: 'white',
+                wordWrap: { width: 300 }
+            }
+        });
+
+        this.blueTeamText = this.make.text({
+            x: 250,
+            y: 400,
+            text: this.blueTeamId,
+            origin: { x: 1.0, y: 1.0 },
+            style: {
+                font: 'bold 25px Arial',
+                fill: 'blue',
+                align: 'center',
                 wordWrap: { width: 300 }
             }
         });
@@ -284,7 +334,7 @@ const gameStart = {
         if(this.frameCnt == this.FIND_DIST_FRAME){
 
             this.roundCnt += 1;
-            this.scoreboard.text = "Round "+this.roundCnt;
+            this.timerboard.text = "Round "+this.roundCnt;
             this.Arena.FindDist(); // 探索移動點
             
         }else if(this.frameCnt < this.FIND_ENEMY_FRAME){
@@ -312,16 +362,18 @@ const gameStart = {
                 var RoundResult = this.Arena.CleanUp(); // 清理戰場
                 if(RoundResult != 'Next'){
 
+                    this.END_FRAME = -1; //防止再進來這個if
                     if (RoundResult == 'Red'){
-                        uploadGameResult(this.redTeamId,this.blueTeamID)
+                        uploadGameResult(this.redTeamId,this.blueTeamId)
                     }else if(RoundResult == 'Blue'){
-                        uploadGameResult(this.blueTeamId,this.redTeamID)
+                        uploadGameResult(this.blueTeamId,this.redTeamId)
                     }
 
                     this.time.addEvent({ 
                         delay: 1000, 
                         callback: ()=>{this.scene.start('settlement',{'logging':this.Calculator.logging,'result':RoundResult})}, 
                         callbackScope: this }); // 遊戲結束
+                    
                 }
                 this.Arena.RoundEnd(); // 回合結束
     
@@ -336,6 +388,66 @@ const gameStart = {
 
 /*===========================================================================================*/
 
+const leaderboard = {
+    key: 'leaderboard',
+    init(data){
+        this.databaseContent = data.databaseContent;
+    }
+    ,
+    preload: function(){
+
+    }
+    ,
+    create: function(){
+
+        this.showTeamNum = 10;
+        var leaderboardArray = new Array();
+
+        for(var id in this.databaseContent.teams){
+            if(id == 'Guest') continue;
+            const win = this.databaseContent.teams[id].win;
+            const lose = this.databaseContent.teams[id].lose;
+            const winRate = isNaN(win/(win+lose)) ? 0 : win/(win+lose)*100;
+            leaderboardArray.push({teamId:id,win:win,lose:lose,winRate:winRate})
+        }
+
+        leaderboardArray.sort((a,b)=>{return b.winRate-a.winRate});
+
+        var leaderboardText = 'Rank \n\n';
+
+        for(let i=0; i<Math.min(leaderboardArray.length,this.showTeamNum); i++){
+            let teamRec = leaderboardArray[i];
+            let rowText = '    ' + (i+1) + '       ' + teamRec.teamId + '   勝率: ' + teamRec.winRate.toFixed(2) + '%'
+                            + '  ( ' + teamRec.win + ' / ' + teamRec.lose + ' )';
+            leaderboardText = leaderboardText + rowText + '\n\n';
+        }
+
+        this.leaderboard = this.make.text({
+            x: 640,
+            y: 450,
+            text: leaderboardText,
+            origin: { x: 1.0, y: 1.0 },
+            style: {
+                font: 'bold 20px Arial',
+                fill: 'white',
+                align: 'left',
+            },
+            
+        });
+
+        this.leaderboard.setInteractive({useHandCursor: true})
+        this.leaderboard.on('pointerdown', () => {
+            this.scene.start('lobby');
+        }
+        )
+    }
+    ,
+    update: function(){
+
+    }
+}
+
+/*===========================================================================================*/
 
 const settlement = {
     key: 'settlement',
@@ -355,8 +467,8 @@ const settlement = {
 
         const settlementText = 
         this.resultText[this.result] + '\n\n\n' +
-        '造成傷害最多 : \n' + damageKing + ' --> ' + this.logging.damages[damageKingIdx] + '\n\n' + 
-        '承受傷害最多 : \n' + injureKing + ' --> ' + this.logging.injures[injureKingIdx];
+        '造成傷害最多 : ' + damageKing + ' --> ' + this.logging.damages[damageKingIdx] + '\n\n' + 
+        '承受傷害最多 : ' + injureKing + ' --> ' + this.logging.injures[injureKingIdx];
 
         this.settlementboard = this.make.text({
             x: 640,
@@ -367,7 +479,7 @@ const settlement = {
                 font: 'bold 20px Arial',
                 fill: 'white',
                 align: 'left',
-                wordWrap: { width: 300 }
+                wordWrap: { width: 1000 }
             }
         });
 
@@ -397,6 +509,7 @@ const config = {
         lobby,
         gameStart,
         settlement,
+        leaderboard,
         
     ]
 }
