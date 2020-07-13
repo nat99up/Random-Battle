@@ -25,19 +25,34 @@ export default class BattleCalculator {
         
     }
 
-    effect(provider,receiver){
+    effect(provider,receiverBoards){
 
         provider.mp.decrease(provider.mp.max);
 
-        const uninjured = receiver.hp.value;
+        var receivers = Array(receiverBoards.length);
+        var uninjureds = Array(receiverBoards.length)
 
-        // 🚧 Under construction 🚧 : 多個receiver尚未完成
-        provider.activeSkill.effect(provider,receiver);
-
-        if(uninjured-receiver.hp.value > 0){
-            this.logging.damages[this.logIdx[provider.arenaId]] += uninjured-receiver.hp.value;
-            this.logging.injures[this.logIdx[receiver.arenaId]] += uninjured-receiver.hp.value;
+        // 🚧 Under construction 🚧
+        for(let i=0; i<receiverBoards.length; i++){
+            
+            receivers[i] = receiverBoards[i].occupy;
+            if(receivers[i]){
+                uninjureds[i] = receiverBoards[i].occupy.hp.value;
+            }else{
+                uninjureds[i] = null;
+            }
         }
+
+        provider.activeSkill.effect(provider,receiverBoards);
+
+        for(let i=0; i<receiverBoards.length; i++){
+
+            if(receivers[i] !=null && uninjureds[i]-receivers[i].hp.value > 0){
+                this.logging.damages[this.logIdx[provider.arenaId]] += uninjureds[i]-receivers[i].hp.value;
+                this.logging.injures[this.logIdx[receivers[i].arenaId]] += uninjureds[i]-receivers[i].hp.value;
+            }
+        }
+        
 
     }
 
@@ -51,9 +66,9 @@ export default class BattleCalculator {
 
     ApplySkill(){
         this.combatants.forEach(combatant => {
-            if(combatant.battleAction == 'skill'){
-
+            if(combatant.battleAction == 'skill' && combatant.skillTarget != null){
                 // skillTarget ==> receiver
+                
                 this.effect(combatant,combatant.skillTarget);
             }
         })

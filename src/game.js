@@ -14,11 +14,12 @@ var StatisticsTable = [
     {name:'原型機1號',win:0,lose:0},
     {name:'原型機2號',win:0,lose:0},
     {name:'角鬥士',win:0,lose:0},
-    {name:'海盜船長',win:0,lose:0}
+    {name:'海盜船長',win:0,lose:0},
+    {name:'怪鳥比莉',win:0,lose:0}
+    
     /* 新角色 */
 ]
 var INFINITY = false;
-
 
 
 const lobby = {
@@ -36,6 +37,7 @@ const lobby = {
         this.load.image('原型機2號','./assets/characters/Prototype_2.png');
         this.load.image('角鬥士','./assets/characters/Gladiator.png');
         this.load.image('海盜船長','./assets/characters/Captain.png');
+        this.load.image('怪鳥比莉','./assets/characters/Billy.png');
         /* 新角色 */
 
         // 場地、隊伍
@@ -57,7 +59,7 @@ const lobby = {
             width: 5,
             cellWidth: 100,
             cellHeight: 100,
-            x: 640-100*(StatisticsTable.length+1)/2,
+            x: 640-300,
             y: 150
         });
 
@@ -140,6 +142,7 @@ const gameStart = {
         this.load.image('原型機2號','./assets/characters/Prototype_2.png');
         this.load.image('角鬥士','./assets/characters/Gladiator.png');
         this.load.image('海盜船長','./assets/characters/Captain.png');
+        this.load.image('怪鳥比莉','./assets/characters/Billy.png');
         /* 新角色 */
 
         // 場地、隊伍
@@ -157,6 +160,7 @@ const gameStart = {
         this.load.spritesheet('level-down', './assets/skill/pipo-btleffect020.png', {frameWidth: 120, frameHeight: 120});
         this.load.spritesheet('chop', './assets/skill/pipo-btleffect001.png', {frameWidth: 120, frameHeight: 120});
         this.load.spritesheet('bombard', './assets/skill/pipo-btleffect003.png', {frameWidth: 120, frameHeight: 120});
+        this.load.spritesheet('storm', './assets/skill/pipo-btleffect039.png', {frameWidth: 120, frameHeight: 120});
         /* 新角色技能*/
     },
     init: function(data){
@@ -390,7 +394,7 @@ const settlement = {
         this.frameCnt = 0;
     },
     update: function(){
-        if(this.frameCnt > 300){
+        if(this.frameCnt > 180){
             this.scene.start('lobby');
         }
         this.frameCnt += 1;

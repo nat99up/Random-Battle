@@ -69,39 +69,58 @@ export default class Arena {
 
     }
 
+    // Private
+    _returnAllBoardsInRange(originBoardCoords,rangeMatrix,boardCallback){
+
+        // use this.boards[][]
+        
+        const originRow = originBoardCoords.row;
+        const originCol = originBoardCoords.col;
+        const centerRow = Math.floor(rangeMatrix.length/2);
+        const centerCol = Math.floor(rangeMatrix[0].length/2);
+
+        var targetArray = [];
+        var targetRow = null;
+        var targetCol = null;
+
+        for(let i=0; i<rangeMatrix.length; i++){
+            for(let j=0; j<rangeMatrix[0].length; j++){
+                if(rangeMatrix[i][j] <= 0){
+                    continue;
+                }
+
+                targetRow = originRow + i - centerRow;
+                targetCol = originCol + j - centerCol;
+                
+                if(targetRow < 0 || targetRow >= this.rows || targetCol < 0 || targetCol >= this.cols){
+                    continue;
+                }
+
+                if( ! boardCallback(this.boards[targetRow][targetCol]) ){
+                    continue;
+                }
+                
+                for(let k=0; k<rangeMatrix[i][j]; k++){
+                    targetArray.push({row:targetRow,col:targetCol})
+                }
+            }
+        }
+
+        return targetArray;
+
+    }
+
     FindDist(){
         // using this.teamRed,this.teamBlue,this.board
         let findingQueue = this.teamRed.concat(this.teamBlue);
         findingQueue.forEach(combatant => {
 
-            let midRow = Math.floor(combatant.moveRange.length/2);
-            let midCol = Math.floor(combatant.moveRange[0].length/2);
-
-            var distArray = [];
-            var distRow = null;
-            var distCol = null;
-
-            for(let i=0; i<combatant.moveRange.length; i++){
-                for(let j=0; j<combatant.moveRange[0].length; j++){
-
-                    if(combatant.moveRange[i][j] <= 0){
-                        continue;
-                    }
-
-                    distRow = combatant.boardCoords.row + i - midRow;
-                    distCol = combatant.boardCoords.col + j - midCol;
-                    
-                    if(distRow < 0 || distRow >= this.rows || distCol < 0 || distCol >= this.cols){
-                        continue;
-                    }
-                    if(this.boards[distRow][distCol].occupy && this.boards[distRow][distCol].occupy.arenaId != combatant.arenaId){
-                        continue;
-                    }
-                    for(let k=0; k<combatant.moveRange[i][j]; k++){
-                        distArray.push({row:distRow,col:distCol})
-                    }
-                }
-            }
+            // get [{row:row1,col:col1},{row:row2,col:col2},...]
+            var distArray = this._returnAllBoardsInRange(
+                combatant.boardCoords,
+                combatant.moveRange,
+                (board)=>{return board.occupy == null || board.occupy == combatant}
+            );
 
             const idx = Math.floor(Math.random() * distArray.length);
             const distPosition = this.boards[distArray[idx].row][distArray[idx].col];
@@ -132,61 +151,58 @@ export default class Arena {
 
         let findingQueue = this.teamRed.concat(this.teamBlue);
         findingQueue.forEach(combatant => {
+
+            // Checkout MP is max
             if(combatant.mp.value == combatant.mp.max){
 
                 // 🚧 Under construction 🚧
 
                 // combatant.skillTarget 用 combatant.activeSkill.targetType 跟 combatant.activeSkill.targetRange設置
-                // skillTarget 可能為「戰鬥員」或「場地」
+                // skillTarget 為「場地」的Array
                 
                 combatant.skillTarget = null;
                 if(combatant.activeSkill.targetType == TargetType.SELF){
-                    combatant.skillTarget = combatant; 
+
+                    combatant.skillTarget = [this.boards[combatant.boardCoords.row][combatant.boardCoords.col]];
                 }else if(combatant.activeSkill.targetType == TargetType.ENEMY){
 
                     // 先隨機挑一個enemy target (single)
-                    const targetRange = combatant.activeSkill.targetRange;
-                    let midRow = Math.floor(targetRange.length/2);
-                    let midCol = Math.floor(targetRange[0].length/2);
-
-                    var targetArray = [];
-                    var targetRow = null;
-                    var targetCol = null;
-
-                    for(let i=0; i<targetRange.length; i++){
-                        for(let j=0; j<targetRange[0].length; j++){
-
-                            if(targetRange[i][j] <= 0){
-                                continue;
-                            }
-
-                            targetRow = combatant.boardCoords.row + i - midRow;
-                            targetCol = combatant.boardCoords.col + j - midCol;
-                            
-                            if(targetRow < 0 || targetRow >= this.rows || targetCol < 0 || targetCol >= this.cols){
-                                continue;
-                            }
-
-                            if(this.boards[targetRow][targetCol].occupy == null || this.boards[targetRow][targetCol].occupy.arenaId[0] == combatant.arenaId[0]){
-                                continue;
-                            }
-                            
-                            for(let k=0; k<targetRange[i][j]; k++){
-                                targetArray.push({row:targetRow,col:targetCol})
-                            }
-                        }
-                    }
+                    var targetArray = this._returnAllBoardsInRange(
+                        combatant.boardCoords,
+                        combatant.activeSkill.targetRange,
+                        (board)=>{return board.occupy != null && board.occupy.arenaId[0] != combatant.arenaId[0]}
+                    );
 
                     if(targetArray.length > 0){
-                        const idx = Math.floor(Math.random() * targetArray.length);
-                        combatant.skillTarget = this.boards[targetArray[idx].row][targetArray[idx].col].occupy;
+                        combatant.skillTarget = targetArray.map((target)=>{
+                            return this.boards[target.row][target.col];
+                        });
+                    }else{
+                        combatant.skillTarget = null;
+                    }   
+                }else if(combatant.activeSkill.targetType == TargetType.AOE){
+
+                    // 先隨機挑一個enemy target (single)
+                    var targetArray = this._returnAllBoardsInRange(
+                        combatant.boardCoords,
+                        combatant.activeSkill.targetRange,
+                        (board)=>{return 1}
+                    );
+
+                    if(targetArray.length > 0){
+                        combatant.skillTarget = targetArray.map((target)=>{
+                            return this.boards[target.row][target.col];
+                        });
                     }else{
                         combatant.skillTarget = null;
                     }   
                 }
                 
                 if(combatant.skillTarget != null){
-                    const targetPosition = {x:combatant.skillTarget.x,y:combatant.skillTarget.y};
+                    //const targetPosition = {x:combatant.skillTarget.x,y:combatant.skillTarget.y};
+                    const targetPosition = combatant.skillTarget.map((board)=>{
+                        return {x:board.x ,y:board.y};
+                    });
                     combatant.animateExecutor.launchSkill(targetPosition, Math.floor((this.scene.END_FRAME-this.scene.FIND_ENEMY_FRAME)*3/5));
                     combatant.battleAction = 'skill';
                 }else{
@@ -196,6 +212,7 @@ export default class Arena {
             }else{
                 combatant.battleAction = 'idle';
             }
+
         })
     }
 
@@ -204,40 +221,18 @@ export default class Arena {
         let findingQueue = this.teamRed.concat(this.teamBlue);
         findingQueue.forEach(combatant => {
 
+            // 技能優先
             if(combatant.battleAction == 'skill'){
                 return ;
             }
 
-            let midRow = Math.floor(combatant.attackRange.length/2);
-            let midCol = Math.floor(combatant.attackRange[0].length/2);
+            // get [{row:row1,col:col1},{row:row2,col:col2},...]
+            var targetArray = this._returnAllBoardsInRange(
+                combatant.boardCoords,
+                combatant.attackRange,
+                (board)=>{return board.occupy != null && board.occupy.arenaId[0] != combatant.arenaId[0]}
+            );
 
-            var targetArray = [];
-            var targetRow = null;
-            var targetCol = null;
-
-            for(let i=0; i<combatant.attackRange.length; i++){
-                for(let j=0; j<combatant.attackRange[0].length; j++){
-
-                    if(combatant.attackRange[i][j] <= 0){
-                        continue;
-                    }
-
-                    targetRow = combatant.boardCoords.row + i - midRow;
-                    targetCol = combatant.boardCoords.col + j - midCol;
-                    
-                    if(targetRow < 0 || targetRow >= this.rows || targetCol < 0 || targetCol >= this.cols){
-                        continue;
-                    }
-
-                    if(this.boards[targetRow][targetCol].occupy == null || this.boards[targetRow][targetCol].occupy.arenaId[0] == combatant.arenaId[0]){
-                        continue;
-                    }
-                    
-                    for(let k=0; k<combatant.attackRange[i][j] * this.boards[targetRow][targetCol].occupy.core.taunt; k++){
-                        targetArray.push({row:targetRow,col:targetCol})
-                    }
-                }
-            }
 
             if(targetArray.length > 0){
                 const idx = Math.floor(Math.random() * targetArray.length);
@@ -273,6 +268,7 @@ export default class Arena {
         this.teamRed = this.teamRed.filter(combatant=>{
             if(combatant.hp.value == 0){
                 this.boards[combatant.boardCoords.row][combatant.boardCoords.col].occupy = null;
+                combatant.skillTarget = null;
                 combatant.enemy = null;
                 combatant.cleanUp();
                 return false
@@ -286,6 +282,7 @@ export default class Arena {
         this.teamBlue = this.teamBlue.filter(combatant=>{
             if(combatant.hp.value == 0){
                 this.boards[combatant.boardCoords.row][combatant.boardCoords.col].occupy = null;
+                combatant.skillTarget = null;
                 combatant.enemy = null;
                 combatant.cleanUp();
                 return false
@@ -315,7 +312,6 @@ export default class Arena {
 
             combatant.animateExecutor.moving = null;
             combatant.animateExecutor.attacking = null;
-
         })
         
     }

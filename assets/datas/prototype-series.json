@@ -49,9 +49,9 @@
         "id":2,
         "name":"原型機2號",
         "hp":100,
-        "mp":70,
-        "atk":12,
-        "def":12,
+        "mp":65,
+        "atk":10,
+        "def":10,
         "taunt":1,
         "attackMode":"strike",
         "moveRange":[
@@ -109,5 +109,29 @@
             [0,1,0]
         ],
         "activeSkillName":"海盜砲"
+    }
+    ,
+    {
+        "id":5,
+        "name":"怪鳥比莉",
+        "hp":100,
+        "mp":35,
+        "atk":10,
+        "def":8,
+        "taunt":1,
+        "attackMode":"strike",
+        "moveRange":[
+            [2,2,2,2,2],
+            [2,1,1,1,2],
+            [2,1,1,1,2],
+            [2,1,1,1,2],
+            [2,2,2,2,2]
+        ],
+        "attackRange":[
+            [1,1,1],
+            [1,0,1],
+            [1,1,1]
+        ],
+        "activeSkillName":"暴風"
     }
 ]

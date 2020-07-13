@@ -34,6 +34,7 @@ export default class AnimateExecutor{
 
 
         // 主動技
+        // 🚧 Under construction 🚧 : 多個動畫
         if(this.combatant.core.activeSkillName == '治癒'){
             
             this.skillSprite = this.scene.add.sprite(this.combatant.x, this.combatant.y, 'heal')
@@ -89,27 +90,58 @@ export default class AnimateExecutor{
                 repeat: 0
             })
 
+        }else if(this.combatant.core.activeSkillName == '暴風'){
+
+            // 🚧 Under construction 🚧
+            this.multiSkillSpriteGroup = this.scene.add.group({ key: 'storm', repeat: 16-1 });
+            this.multiSkillSprites = this.multiSkillSpriteGroup.getChildren();
+
+            for(let i=0; i<this.multiSkillSpriteGroup.getLength(); i++){
+                this.multiSkillSprites[i].visible = false;
+                this.scene.anims.create({
+                    key: this.combatant.core.activeSkillName + i,
+                    frames: this.scene.anims.generateFrameNumbers('storm', { start: 0, end: 8 }),
+                    frameRate: 12,
+                    repeat: 0
+                })
+            }
+            
+
         }else{ /* 新角色技能 */
-
             this.skillSprite = null;
-
         }
 
     }
 
     launchSkill(targetPosition, frames){
 
-        // 🚧 Under construction 🚧
+        // 🚧 Under construction 🚧 this.skillSprite need be a Array
 
         if(this.skillSprite){
-            this.skillSprite.x = targetPosition.x;
-            this.skillSprite.y = targetPosition.y;
-            this.skillSprite.visible = true;
-            this.skillSprite.anims.play(this.combatant.core.activeSkillName, true);
+            for(let i = 0; i < targetPosition.length ; i++){
 
-            this.skillSprite.once('animationcomplete', ()=>{ 
-                this.skillSprite.visible = false;
-            });
+                this.skillSprite.x = targetPosition[i].x;
+                this.skillSprite.y = targetPosition[i].y;
+                this.skillSprite.visible = true;
+                this.skillSprite.anims.play(this.combatant.core.activeSkillName, true);
+
+                this.skillSprite.once('animationcomplete', ()=>{ 
+                    this.skillSprite.visible = false;
+                });
+            }
+            
+        }else if(this.multiSkillSprites){
+            for(let i = 0; i < targetPosition.length ; i++){
+
+                this.multiSkillSprites[i].x = targetPosition[i].x;
+                this.multiSkillSprites[i].y = targetPosition[i].y;
+                this.multiSkillSprites[i].visible = true;
+                this.multiSkillSprites[i].anims.play(this.combatant.core.activeSkillName + i, true);
+
+                this.multiSkillSprites[i].once('animationcomplete', ()=>{ 
+                    this.multiSkillSprites[i].visible = false;
+                });
+            }
         }
     }
 
