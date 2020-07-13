@@ -105,7 +105,7 @@ const lobby = {
         
             if(LOCAL_TEAM_ID == null || LOCAL_TEAM_ID[0] == '_'){
                 alert('未輸入或含有非法字元(_)')
-                OCAL_TEAM_ID = "Guest";
+                LOCAL_TEAM_ID = "Guest";
                 return ;
             }
 
@@ -284,8 +284,8 @@ const gameStart = {
         });
 
         this.redTeamText = this.make.text({
-            x: 400,
-            y: 300,
+            x: 350,
+            y: 250,
             text: this.redTeamId,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -297,8 +297,8 @@ const gameStart = {
         });
 
         this.verseText = this.make.text({
-            x: 400,
-            y: 350,
+            x: 350,
+            y: 300,
             text: 'V.S.',
             origin: { x: 1.0, y: 1.0 },
             align: 'center',
@@ -310,8 +310,8 @@ const gameStart = {
         });
 
         this.blueTeamText = this.make.text({
-            x: 400,
-            y: 400,
+            x: 350,
+            y: 350,
             text: this.blueTeamId,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -473,7 +473,7 @@ const settlement = {
 
         this.settlementboard = this.make.text({
             x: 640,
-            y: 400,
+            y: 200,
             text: settlementText,
             origin: { x: 1.0, y: 1.0 },
             style: {
