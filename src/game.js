@@ -88,7 +88,7 @@ const lobby = {
         // 隊伍名稱顯示
         this.teamIDText = this.make.text({
             x: 1100,
-            y: 575,
+            y: 580,
             text: 'Team ID : ' + LOCAL_TEAM_ID,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -250,7 +250,7 @@ const gameStart = {
         this.roundCnt = 0;
 
         // 資源載入完成，加入遊戲物件及相關設定
-        this.Arena = new Arena({scene:this, top:0, left:640-300, rows:4, cols:4, cellSize:150, key:'block'})
+        this.Arena = new Arena({scene:this, top:20, left:640-300, rows:4, cols:4, cellSize:150, key:'block'})
         let jsonDatas = this.cache.json.get('combatant_data');
 
         // 建立戰鬥員及隊伍
@@ -272,7 +272,7 @@ const gameStart = {
         // 計分表
         this.timerboard = this.make.text({
             x: 200,
-            y: 100,
+            y: 150,
             text: 'Round 0',
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -284,7 +284,7 @@ const gameStart = {
 
         this.redTeamText = this.make.text({
             x: 250,
-            y: 300,
+            y: 350,
             text: this.redTeamId,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -297,7 +297,7 @@ const gameStart = {
 
         this.verseText = this.make.text({
             x: 250,
-            y: 350,
+            y: 400,
             text: 'V.S.',
             origin: { x: 1.0, y: 1.0 },
             align: 'center',
@@ -310,7 +310,7 @@ const gameStart = {
 
         this.blueTeamText = this.make.text({
             x: 250,
-            y: 400,
+            y: 450,
             text: this.blueTeamId,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -400,7 +400,7 @@ const leaderboard = {
     ,
     create: function(){
 
-        this.showTeamNum = 10;
+        this.showTeamNum = 8;
         var leaderboardArray = new Array();
 
         for(var id in this.databaseContent.teams){
@@ -424,7 +424,7 @@ const leaderboard = {
 
         this.leaderboard = this.make.text({
             x: 640,
-            y: 450,
+            y: 550,
             text: leaderboardText,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -472,7 +472,7 @@ const settlement = {
 
         this.settlementboard = this.make.text({
             x: 640,
-            y: 350,
+            y: 400,
             text: settlementText,
             origin: { x: 1.0, y: 1.0 },
             style: {
@@ -502,7 +502,7 @@ const settlement = {
 const config = {
     type: Phaser.AUTO,
     width: 1280,
-    height: 615,
+    height: 640,
     parent: 'app',
     scene: [
         
