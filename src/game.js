@@ -418,7 +418,7 @@ const leaderboard = {
         for(let i=0; i<Math.min(leaderboardArray.length,this.showTeamNum); i++){
             let teamRec = leaderboardArray[i];
             let rowText = '    ' + (i+1) + '       ' + teamRec.teamId + '   勝率: ' + teamRec.winRate.toFixed(2) + '%'
-                            + '  ( ' + teamRec.win + ' / ' + teamRec.lose + ' )';
+                            + '  ( ' + teamRec.win + ' / ' + (teamRec.win+teamRec.lose) + ' )';
             leaderboardText = leaderboardText + rowText + '\n\n';
         }
 
