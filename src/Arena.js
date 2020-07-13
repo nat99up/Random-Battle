@@ -165,9 +165,9 @@ export default class Arena {
                 if(combatant.activeSkill.targetType == TargetType.SELF){
 
                     combatant.skillTarget = [this.boards[combatant.boardCoords.row][combatant.boardCoords.col]];
+                    
                 }else if(combatant.activeSkill.targetType == TargetType.ENEMY){
 
-                    // 先隨機挑一個enemy target (single)
                     var targetArray = this._returnAllBoardsInRange(
                         combatant.boardCoords,
                         combatant.activeSkill.targetRange,
@@ -181,9 +181,23 @@ export default class Arena {
                     }else{
                         combatant.skillTarget = null;
                     }   
+                }else if(combatant.activeSkill.targetType == TargetType.ALLIED){
+
+                    var targetArray = this._returnAllBoardsInRange(
+                        combatant.boardCoords,
+                        combatant.activeSkill.targetRange,
+                        (board)=>{return board.occupy != null && board.occupy.arenaId[0] == combatant.arenaId[0]}
+                    );
+
+                    if(targetArray.length > 0){
+                        combatant.skillTarget = targetArray.map((target)=>{
+                            return this.boards[target.row][target.col];
+                        });
+                    }else{
+                        combatant.skillTarget = null;
+                    }   
                 }else if(combatant.activeSkill.targetType == TargetType.AOE){
 
-                    // 先隨機挑一個enemy target (single)
                     var targetArray = this._returnAllBoardsInRange(
                         combatant.boardCoords,
                         combatant.activeSkill.targetRange,

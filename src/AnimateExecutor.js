@@ -106,6 +106,16 @@ export default class AnimateExecutor{
                 })
             }
             
+        }else if(this.combatant.core.activeSkillName == '祝福'){
+
+            this.skillSprite = this.scene.add.sprite(this.combatant.x, this.combatant.y, 'blessing')
+            this.skillSprite.visible = false;
+            this.scene.anims.create({
+                key: this.combatant.core.activeSkillName,
+                frames: this.scene.anims.generateFrameNumbers('blessing', { start: 0, end: 7 }),
+                frameRate: 10,
+                repeat: 0
+            })
 
         }else{ /* 新角色技能 */
             this.skillSprite = null;

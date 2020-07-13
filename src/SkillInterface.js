@@ -166,6 +166,31 @@ const skill_暴風 = {
 
 }
 
+const skill_祝福 = {
+
+    skillType: SkillType.MAGIC,
+
+    targetType: TargetType.ALLIED,
+
+    targetRange: [
+        [1,1,1,1,1],
+        [1,1,1,1,1],
+        [1,1,0,1,1],
+        [1,1,1,1,1],
+        [1,1,1,1,1]
+    ],
+
+    effect:function(provider,receiverBoards){
+        // receiver 為 Board Array
+
+        const idx = Math.floor(Math.random() * receiverBoards.length);
+        var receiver = receiverBoards[idx].occupy;
+        receiver.mp.decrease(-30);
+        receiver.hp.decrease(-10);
+    }
+
+}
+
 /* 新角色技能 */
 const skill_新角色技能 = {};
 
@@ -176,7 +201,8 @@ SkillInstaceDict = {
     skill_武裝強化:skill_武裝強化,
     skill_羅馬斬:skill_羅馬斬,
     skill_海盜砲:skill_海盜砲,
-    skill_暴風:skill_暴風
+    skill_暴風:skill_暴風,
+    skill_祝福:skill_祝福
     /* 新角色技能  */
 }
 
