@@ -173,11 +173,9 @@ const skill_祝福 = {
     targetType: TargetType.ALLIED,
 
     targetRange: [
-        [1,1,1,1,1],
-        [1,1,1,1,1],
-        [1,1,0,1,1],
-        [1,1,1,1,1],
-        [1,1,1,1,1]
+        [1,1,1],
+        [1,0,1],
+        [1,1,1],
     ],
 
     effect:function(provider,receiverBoards){
@@ -186,7 +184,6 @@ const skill_祝福 = {
         const idx = Math.floor(Math.random() * receiverBoards.length);
         var receiver = receiverBoards[idx].occupy;
         receiver.mp.decrease(-30);
-        receiver.hp.decrease(-10);
     }
 
 }
