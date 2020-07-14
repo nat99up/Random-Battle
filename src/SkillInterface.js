@@ -185,8 +185,10 @@ const skill_祝福 = {
 
         const idx = Math.floor(Math.random() * receiverBoards.length);
         var receiver = receiverBoards[idx].occupy;
-        receiver.hp.decrease(-20);
+        
+        receiver.core.atk += 1;
         receiver.mp.decrease(-20);
+
     }
 
 }
@@ -214,8 +216,8 @@ const skill_盤根錯節 = {
             var receiver = receiverBoards[i].occupy;
             if(receiver != null && provider.arenaId[0] != receiver.arenaId[0]){
                 receiver.hp.decrease(15);
-                provider.hp.decrease(-10)
-                provider.core.taunt += 1;
+                provider.hp.decrease(-15)
+                provider.core.def += 1;
             }
         }
         
