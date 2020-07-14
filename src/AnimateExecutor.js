@@ -112,11 +112,27 @@ export default class AnimateExecutor{
             this.skillSprite.visible = false;
             this.scene.anims.create({
                 key: this.combatant.core.activeSkillName,
-                frames: this.scene.anims.generateFrameNumbers('blessing', { start: 0, end: 7 }),
-                frameRate: 10,
+                frames: this.scene.anims.generateFrameNumbers('blessing', { start: 0, end: 13 }),
+                frameRate: 16,
                 repeat: 0
             })
 
+        }else if(this.combatant.core.activeSkillName == '盤根錯節'){
+
+            // 🚧 Under construction 🚧
+            this.multiSkillSpriteGroup = this.scene.add.group({ key: 'root', repeat: 16-1 });
+            this.multiSkillSprites = this.multiSkillSpriteGroup.getChildren();
+
+            for(let i=0; i<this.multiSkillSpriteGroup.getLength(); i++){
+                this.multiSkillSprites[i].visible = false;
+                this.scene.anims.create({
+                    key: this.combatant.core.activeSkillName + i,
+                    frames: this.scene.anims.generateFrameNumbers('root', { start: 0, end: 9 }),
+                    frameRate: 12,
+                    repeat: 0
+                })
+            }
+            
         }else{ /* 新角色技能 */
             this.skillSprite = null;
         }

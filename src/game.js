@@ -10,7 +10,8 @@ var RegisterList = [
     '角鬥士',
     '海盜船長',
     '怪鳥比莉',
-    '幸運仙子'
+    '幸運仙子',
+    '枯木大王'
     /* 新角色 */
 ]
 
@@ -37,6 +38,7 @@ const lobby = {
         this.load.image('海盜船長','./assets/characters/Captain.png');
         this.load.image('怪鳥比莉','./assets/characters/Billy.png');
         this.load.image('幸運仙子','./assets/characters/Fairy.png');
+        this.load.image('枯木大王','./assets/characters/Dead_Wood.png')
         /* 新角色 */
 
         // 場地、隊伍
@@ -209,6 +211,7 @@ const gameStart = {
         this.load.image('海盜船長','./assets/characters/Captain.png');
         this.load.image('怪鳥比莉','./assets/characters/Billy.png');
         this.load.image('幸運仙子','./assets/characters/Fairy.png');
+        this.load.image('枯木大王','./assets/characters/Dead_Wood.png')
         /* 新角色 */
 
         // 場地、隊伍
@@ -227,7 +230,8 @@ const gameStart = {
         this.load.spritesheet('chop', './assets/skill/pipo-btleffect001.png', {frameWidth: 120, frameHeight: 120});
         this.load.spritesheet('bombard', './assets/skill/pipo-btleffect003.png', {frameWidth: 120, frameHeight: 120});
         this.load.spritesheet('storm', './assets/skill/pipo-btleffect039.png', {frameWidth: 120, frameHeight: 120});
-        this.load.spritesheet('blessing', './assets/skill/pipo-btleffect010.png', {frameWidth: 120, frameHeight: 120});
+        this.load.spritesheet('blessing', './assets/skill/pipo-btleffect007.png', {frameWidth: 120, frameHeight: 120});
+        this.load.spritesheet('root', './assets/skill/pipo-btleffect118i.png', {frameWidth: 120, frameHeight: 120});
         /* 新角色技能*/
     },
     init: function(data){

@@ -157,7 +157,7 @@ const skill_暴風 = {
         for(let i=0; i<receiverBoards.length; i++){
             var receiver = receiverBoards[i].occupy;
             if(receiver != null && provider.arenaId[0] != receiver.arenaId[0]){
-                receiver.hp.decrease(18);
+                receiver.hp.decrease(20);
             }
         }
 
@@ -185,8 +185,38 @@ const skill_祝福 = {
 
         const idx = Math.floor(Math.random() * receiverBoards.length);
         var receiver = receiverBoards[idx].occupy;
-        receiver.hp.decrease(-25);
-        receiver.mp.decrease(-25);
+        receiver.hp.decrease(-20);
+        receiver.mp.decrease(-20);
+    }
+
+}
+
+const skill_盤根錯節 = {
+
+    skillType: SkillType.PHYSICAL,
+
+    targetType: TargetType.AOE,
+
+    targetRange: [
+        [1,0,1,0,1,0,1],
+        [0,1,0,1,0,1,0],
+        [1,0,1,0,1,0,1],
+        [0,1,0,0,0,1,0],
+        [1,0,1,0,1,0,1],
+        [0,1,0,1,0,1,0],
+        [1,0,1,0,1,0,1]
+    ],
+
+    effect:function(provider,receiverBoards){
+        // receiver 可能為 Combatant 或 Board
+
+        for(let i=0; i<receiverBoards.length; i++){
+            var receiver = receiverBoards[i].occupy;
+            if(receiver != null && provider.arenaId[0] != receiver.arenaId[0]){
+                receiver.hp.decrease(25);
+            }
+        }
+        
     }
 
 }
@@ -202,7 +232,8 @@ SkillInstaceDict = {
     skill_羅馬斬:skill_羅馬斬,
     skill_海盜砲:skill_海盜砲,
     skill_暴風:skill_暴風,
-    skill_祝福:skill_祝福
+    skill_祝福:skill_祝福,
+    skill_盤根錯節:skill_盤根錯節
     /* 新角色技能  */
 }
 
