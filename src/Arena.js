@@ -248,6 +248,18 @@ export default class Arena {
                 (board)=>{return board.occupy != null && board.occupy.arenaId[0] != combatant.arenaId[0]}
             );
 
+            var targetArrayWithTaunt = new Array();
+            for(let i in targetArray){
+                let row = targetArray[i].row;
+                let col = targetArray[i].col;
+                let taunt = this.boards[row][col].occupy.core.taunt;
+                for(let j=0 ; j<taunt ; j++){
+                    targetArrayWithTaunt.push({row:row,col:col});
+                }
+            }
+
+            targetArray = targetArrayWithTaunt;
+
 
             if(targetArray.length > 0){
                 const idx = Math.floor(Math.random() * targetArray.length);

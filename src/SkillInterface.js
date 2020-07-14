@@ -213,7 +213,9 @@ const skill_盤根錯節 = {
         for(let i=0; i<receiverBoards.length; i++){
             var receiver = receiverBoards[i].occupy;
             if(receiver != null && provider.arenaId[0] != receiver.arenaId[0]){
-                receiver.hp.decrease(25);
+                receiver.hp.decrease(15);
+                provider.hp.decrease(-10)
+                provider.core.taunt += 1;
             }
         }
         

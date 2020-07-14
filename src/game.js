@@ -481,7 +481,7 @@ const settlement = {
 
         this.settlementboard = this.make.text({
             x: 640,
-            y: 200,
+            y: 250,
             text: settlementText,
             origin: { x: 1.0, y: 1.0 },
             style: {
