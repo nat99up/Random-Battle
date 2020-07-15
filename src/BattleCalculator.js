@@ -2,7 +2,6 @@ export default class BattleCalculator {
 
     constructor(team1,team2) {
         this.combatants = team1.concat(team2);
-        this.combatants.sort(() => Math.random() - 0.5);
 
         this.logIdx = {'r0':0,'r1':1,'r2':2,'b0':3,'b1':4,'b2':5,}
         this.logging = {
