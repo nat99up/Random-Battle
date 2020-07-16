@@ -41,7 +41,7 @@ var promise = database.ref('/').on('value',result=>{
         return {id:OpponentTidArray[idx],array:membersToTeamArray(baseData.teams[OpponentTidArray[idx]].members)}
     }
 
-    uploadGameResult = (winnerTeamId,loserTeamId) => {
+    uploadGameResult = (winnerTeamId,winnderTeamArray,loserTeamId,loserTeamArray) => {
 
         if(winnerTeamId == 'Guest' || loserTeamId == 'Guest'){
             // 訪客對戰不紀錄

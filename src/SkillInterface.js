@@ -109,7 +109,7 @@ const skill_羅馬斬 = {
         const idx = Math.floor(Math.random() * receiverBoards.length);
         var receiver = receiverBoards[idx].occupy;
         provider.hp.decrease(5);
-        receiver.hp.decrease(25);
+        receiver.hp.decrease(30);
     }
 
 }

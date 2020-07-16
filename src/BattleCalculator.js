@@ -1,3 +1,5 @@
+import {TargetType} from "./SkillInterface.js"
+
 export default class BattleCalculator {
 
     constructor(team1,team2) {
@@ -64,7 +66,10 @@ export default class BattleCalculator {
     }
 
     ApplySkill(){
-        this.combatants.forEach(combatant => {
+        this.combatants.sort((x,y)=>{ 
+            if(x.activeSkill.targetType == TargetType.ALLIED)return -1  
+            if(y.activeSkill.targetType == TargetType.ALLIED)return 1
+            return Math.random()-0.5}).forEach(combatant => {
             if(combatant.battleAction == 'skill' && combatant.skillTarget != null){
                 // skillTarget ==> receiver
                 

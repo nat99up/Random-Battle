@@ -1,5 +1,5 @@
 import Board from "./Board.js"
-import {SkillInterface,SkillType,TargetType} from "./SkillInterface.js"
+import {SkillType,TargetType} from "./SkillInterface.js"
 
 export default class Arena {
 

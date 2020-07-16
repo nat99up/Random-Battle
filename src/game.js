@@ -26,9 +26,10 @@ const lobby = {
 
         this.load.image('logo','./assets/Logo.png');
         this.load.image('sword','./assets/sword.png');
-        this.load.image('dice','./assets/dice.png');
         this.load.image('leaderboard','./assets/leaderboard.png');
-        this.load.image('team-setting','./assets/team-setting.png')
+        this.load.image('dice','./assets/dice.png');
+        this.load.image('introduce','./assets/introduce.png');
+        this.load.image('team-setting','./assets/team-setting.png');
 
         // 人物圖像
         this.load.image('原型機0號','./assets/characters/Prototype_0.png');
@@ -44,15 +45,15 @@ const lobby = {
         // 場地、隊伍
         this.load.image('block', 'assets/300x300.png');
         this.load.image('flag-team-blue','./assets/150x150-blue.png');
-        this.load.image('flag-team-red','./assets/150x150-red.png');
     },
 
     create: function(){
 
         this.logo = this.add.image(640, 100, 'logo').setScale(0.5);
         this.sword = this.add.image(400, 450, 'sword').setScale(0.5);
-        this.dice = this.add.image(720, 450, 'dice').setScale(0.5);
-        this.leaderboard = this.add.image(560, 450, 'leaderboard').setScale(0.5);
+        this.leaderboard = this.add.image(520, 450, 'leaderboard').setScale(0.5);
+        this.dice = this.add.image(640, 450, 'dice').setScale(0.5);
+        this.introduce = this.add.image(760, 450, 'introduce').setScale(0.5);
         this.team_setting = this.add.image(880, 450, 'team-setting').setScale(0.5);
 
         var blocks = this.add.group({ key: 'block', repeat: RegisterList.length-1, setScale: { x: 1/3, y: 1/3 } });
@@ -156,6 +157,20 @@ const lobby = {
             }
         })
 
+        // Leaderboard page
+        this.leaderboard.setInteractive({useHandCursor: true})
+        this.leaderboard.on('pointerdown',()=>{
+            let a = getDatabaseContent();
+            if( a == false){
+                alert('Connecting....')
+                return ;
+            }
+            this.scene.start('leaderboard',{
+                databaseContent:a,
+            });
+
+        })
+
         // Ramdom pick
         this.dice.setInteractive({useHandCursor: true})
         this.dice.on('pointerdown',()=>{
@@ -171,17 +186,10 @@ const lobby = {
             });
         })
 
-        // Leaderboard page
-        this.leaderboard.setInteractive({useHandCursor: true})
-        this.leaderboard.on('pointerdown',()=>{
-            let a = getDatabaseContent();
-            if( a == false){
-                alert('Connecting....')
-                return ;
-            }
-            this.scene.start('leaderboard',{
-                databaseContent:a,
-            });
+        // Introduce
+        this.introduce.setInteractive({useHandCursor: true})
+        this.introduce.on('pointerdown',()=>{
+            this.scene.start('introduce');
 
         })
 
@@ -191,6 +199,97 @@ const lobby = {
 
         this.frameCnt += 1;
     }
+}
+
+/*===========================================================================================*/
+
+const introduce = {
+    key: 'introduce',
+    preload: function(){
+
+        // 人物圖像
+        this.load.image('原型機0號','./assets/characters/Prototype_0.png');
+        this.load.image('原型機1號','./assets/characters/Prototype_1.png');
+        this.load.image('原型機2號','./assets/characters/Prototype_2.png');
+        this.load.image('角鬥士','./assets/characters/Gladiator.png');
+        this.load.image('海盜船長','./assets/characters/Captain.png');
+        this.load.image('怪鳥比莉','./assets/characters/Billy.png');
+        this.load.image('幸運仙子','./assets/characters/Fairy.png');
+        this.load.image('枯木大王','./assets/characters/Dead_Wood.png')
+        /* 新角色 */
+
+        // 角色介紹
+        this.load.image('原型機0號intro','./assets/characters/intro/Prototype_0_intro.png');
+        this.load.image('原型機1號intro','./assets/characters/intro/Prototype_1_intro.png');
+        this.load.image('原型機2號intro','./assets/characters/intro/Prototype_2_intro.png');
+        this.load.image('角鬥士intro','./assets/characters/intro/Gladiator_intro.png');
+        this.load.image('海盜船長intro','./assets/characters/intro/Captain_intro.png');
+        this.load.image('怪鳥比莉intro','./assets/characters/intro/Billy_intro.png');
+        this.load.image('幸運仙子intro','./assets/characters/intro/Fairy_intro.png');
+        this.load.image('枯木大王intro','./assets/characters/intro/Dead_Wood_intro.png')
+        /* 新角色 */
+
+        this.load.image('block', 'assets/300x300.png');
+        this.load.image('flag-team-blue','./assets/150x150-blue.png');
+        this.load.image('back','assets/back.png');
+    },
+
+    create: function(){
+
+        this.back = this.add.image(350, 120, 'back').setScale(0.4);
+        this.back.setInteractive({useHandCursor: true})
+        this.back.on('pointerdown',()=>{
+            this.scene.start('lobby');
+        })
+
+        this.background = this.add.rectangle(640, 400, 480, 360, 0xffffff);
+        this.background.visible = false;
+
+        var blocks = this.add.group({ key: 'block', repeat: RegisterList.length-1, setScale: { x: 1/6, y: 1/6 } });
+        
+        Phaser.Actions.GridAlign(blocks.getChildren(), {
+            width: 8,
+            cellWidth: 50,
+            cellHeight: 50,
+            x: 640-300,
+            y: 0
+        });
+
+        this.roleList = new Array(RegisterList.length).fill(null);
+
+        for(let i=0; i<RegisterList.length; i++){
+
+            let name = RegisterList[i];
+            let block  = blocks.getChildren()[i];
+            this.roleList[i] = this.add.image(block.x, block.y, name).setScale(30/256);
+            this.roleList[i].box = this.add.image(block.x, block.y, 'flag-team-blue').setScale(1/3);
+            this.roleList[i].box.visible = false;
+
+            this.roleList[i].intro = this.add.image(640, 400, name+'intro').setScale(1/4); 
+            this.roleList[i].intro.visible = false;
+            block.setInteractive({useHandCursor: true})
+            block.on('pointerdown', () => {
+
+                if(this.roleList[i].box.visible){
+                    this.background.visible = false;
+                    this.roleList[i].box.visible = false;
+                    this.roleList[i].intro.visible = false;
+                }else{
+                    for(let j=0; j<RegisterList.length; j++){
+                        this.roleList[j].box.visible = false;
+                        this.roleList[j].intro.visible = false;
+                    }
+                    this.background.visible = true;
+                    this.roleList[i].box.visible = true;
+                    this.roleList[i].intro.visible = true;
+                }
+                
+            })
+        }
+
+       
+    },
+
 }
 
 
@@ -240,7 +339,6 @@ const gameStart = {
     },
     init: function(data){
 
-    
         this.blueTeamId = data.blueTeamId;
         this.blueTeamArray = data.blueTeam;
 
@@ -380,9 +478,9 @@ const gameStart = {
 
                     this.END_FRAME = -1; //防止再進來這個if
                     if (RoundResult == 'Red'){
-                        uploadGameResult(this.redTeamId,this.blueTeamId)
+                        uploadGameResult(this.redTeamId,this.redTeamArray,this.blueTeamId,this.blueTeamArray)
                     }else if(RoundResult == 'Blue'){
-                        uploadGameResult(this.blueTeamId,this.redTeamId)
+                        uploadGameResult(this.blueTeamId,this.redTeamArray,this.redTeamId,this.blueTeamArray)
                     }
 
                     this.time.addEvent({ 
@@ -395,7 +493,6 @@ const gameStart = {
     
             }
         }
-
 
         if(this.roundCnt == 60 && this.END_FRAME > 0){
 
@@ -429,10 +526,16 @@ const leaderboard = {
     }
     ,
     preload: function(){
-
+        this.load.image('back','assets/back.png');
     }
     ,
     create: function(){
+
+        this.back = this.add.image(350, 120, 'back').setScale(0.4);
+        this.back.setInteractive({useHandCursor: true})
+        this.back.on('pointerdown',()=>{
+            this.scene.start('lobby');
+        })
 
         this.showTeamNum = 8;
         var leaderboardArray = new Array();
@@ -468,15 +571,6 @@ const leaderboard = {
             },
             
         });
-
-        this.leaderboard.setInteractive({useHandCursor: true})
-        this.leaderboard.on('pointerdown', () => {
-            this.scene.start('lobby');
-        }
-        )
-    }
-    ,
-    update: function(){
 
     }
 }
@@ -541,6 +635,7 @@ const config = {
     scene: [
         
         lobby,
+        introduce,
         gameStart,
         settlement,
         leaderboard,
