@@ -231,13 +231,13 @@ const introduce = {
 
     create: function(){
 
-        this.back = this.add.image(350, 120, 'back').setScale(0.4);
+        this.back = this.add.image(350, 80, 'back').setScale(0.4);
         this.back.setInteractive({useHandCursor: true})
         this.back.on('pointerdown',()=>{
             this.scene.start('lobby');
         })
 
-        this.background = this.add.rectangle(640, 400, 480, 360, 0xffffff);
+        this.background = this.add.rectangle(640, 340, 480, 360, 0xffffff);
         this.background.visible = false;
 
         var blocks = this.add.group({ key: 'block', repeat: RegisterList.length-1, setScale: { x: 1/6, y: 1/6 } });
@@ -247,7 +247,7 @@ const introduce = {
             cellWidth: 50,
             cellHeight: 50,
             x: 640-300,
-            y: 0
+            y: -40
         });
 
         this.roleList = new Array(RegisterList.length).fill(null);
@@ -260,7 +260,7 @@ const introduce = {
             this.roleList[i].box = this.add.image(block.x, block.y, 'flag-team-blue').setScale(1/3);
             this.roleList[i].box.visible = false;
 
-            this.roleList[i].intro = this.add.image(640, 400, name+'intro').setScale(1/4); 
+            this.roleList[i].intro = this.add.image(640, 340, name+'intro').setScale(1/4); 
             this.roleList[i].intro.visible = false;
             block.setInteractive({useHandCursor: true})
             block.on('pointerdown', () => {
@@ -541,7 +541,7 @@ const leaderboard = {
 
         this.showTeamNum = 8;
 
-        this.back = this.add.image(350, 120, 'back').setScale(0.4);
+        this.back = this.add.image(350, 80, 'back').setScale(0.4);
         this.back.setInteractive({useHandCursor: true})
         this.back.on('pointerdown',()=>{
             this.scene.start('lobby');
@@ -566,7 +566,7 @@ const leaderboard = {
                             + '  ( ' + teamRec.win + ' / ' + (teamRec.win+teamRec.lose) + ' )';
             this.make.text({
                 x: 640-280,
-                y: 180+i*60,
+                y: 140+i*60,
                 text: i+1,
                 origin: { x: 1.0, y: 1.0 },
                 style: {
@@ -576,7 +576,7 @@ const leaderboard = {
             });
             this.make.text({
                 x: 640+140,
-                y: 180+i*60,
+                y: 140+i*60,
                 text: rowText,
                 origin: { x: 1.0, y: 1.0 },
                 style: {
@@ -591,7 +591,7 @@ const leaderboard = {
                 cellWidth: 50,
                 cellHeight: 50,
                 x: 640+60,
-                y: 40+i*60,
+                y: i*60,
             });
             for(let j=0 ; j<teamRec.teamArray.length ; j++){
                 let name = RegisterList[teamRec.teamArray[j]];
