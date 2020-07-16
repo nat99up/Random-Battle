@@ -231,13 +231,13 @@ const introduce = {
 
     create: function(){
 
-        this.back = this.add.image(350, 80, 'back').setScale(0.4);
+        this.back = this.add.image(350, 480, 'back').setScale(0.4);
         this.back.setInteractive({useHandCursor: true})
         this.back.on('pointerdown',()=>{
             this.scene.start('lobby');
         })
 
-        this.background = this.add.rectangle(640, 340, 480, 360, 0xffffff);
+        this.background = this.add.rectangle(640, 260, 480, 360, 0xffffff);
         this.background.visible = false;
 
         var blocks = this.add.group({ key: 'block', repeat: RegisterList.length-1, setScale: { x: 1/6, y: 1/6 } });
@@ -247,7 +247,7 @@ const introduce = {
             cellWidth: 50,
             cellHeight: 50,
             x: 640-300,
-            y: -40
+            y: 350
         });
 
         this.roleList = new Array(RegisterList.length).fill(null);
@@ -260,7 +260,7 @@ const introduce = {
             this.roleList[i].box = this.add.image(block.x, block.y, 'flag-team-blue').setScale(1/3);
             this.roleList[i].box.visible = false;
 
-            this.roleList[i].intro = this.add.image(640, 340, name+'intro').setScale(1/4); 
+            this.roleList[i].intro = this.add.image(640, 260, name+'intro').setScale(1/4); 
             this.roleList[i].intro.visible = false;
             block.setInteractive({useHandCursor: true})
             block.on('pointerdown', () => {
@@ -541,7 +541,7 @@ const leaderboard = {
 
         this.showTeamNum = 8;
 
-        this.back = this.add.image(350, 80, 'back').setScale(0.4);
+        this.back = this.add.image(300, 500, 'back').setScale(0.4);
         this.back.setInteractive({useHandCursor: true})
         this.back.on('pointerdown',()=>{
             this.scene.start('lobby');
