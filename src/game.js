@@ -233,6 +233,10 @@ const gameStart = {
         this.load.spritesheet('blessing', './assets/skill/pipo-btleffect007.png', {frameWidth: 120, frameHeight: 120});
         this.load.spritesheet('root', './assets/skill/pipo-btleffect118i.png', {frameWidth: 120, frameHeight: 120});
         /* 新角色技能*/
+
+        // 地形動畫
+        this.load.spritesheet('poison', './assets/skill/pipo-btleffect014.png', {frameWidth: 120, frameHeight: 120});
+
     },
     init: function(data){
 
@@ -330,7 +334,6 @@ const gameStart = {
             }
         });
 
-
     },
     update: function(){
         // 遊戲狀態更新
@@ -349,6 +352,10 @@ const gameStart = {
         }else if(this.frameCnt < this.FIND_ENEMY_FRAME){
 
             this.Arena.CombatantsMoving(); // 執行移動
+
+            if(this.frameCnt == Math.floor(this.FIND_ENEMY_FRAME/2)){
+                this.Arena.BoardsGeomancyAnimation()
+            }
 
         }else if(this.frameCnt == this.FIND_ENEMY_FRAME){
 
@@ -387,6 +394,24 @@ const gameStart = {
                 this.Arena.RoundEnd(); // 回合結束
     
             }
+        }
+
+
+        if(this.roundCnt == 60 && this.END_FRAME > 0){
+
+            this.Arena.boards[0][0].setGeomancy('毒素','N',100);
+            this.Arena.boards[0][1].setGeomancy('毒素','N',100);
+            this.Arena.boards[0][2].setGeomancy('毒素','N',100);
+            this.Arena.boards[0][3].setGeomancy('毒素','N',100);
+            this.Arena.boards[1][0].setGeomancy('毒素','N',100);
+            this.Arena.boards[1][3].setGeomancy('毒素','N',100);
+            this.Arena.boards[2][0].setGeomancy('毒素','N',100);
+            this.Arena.boards[2][3].setGeomancy('毒素','N',100);
+            this.Arena.boards[3][0].setGeomancy('毒素','N',100);
+            this.Arena.boards[3][1].setGeomancy('毒素','N',100);
+            this.Arena.boards[3][2].setGeomancy('毒素','N',100);
+            this.Arena.boards[3][3].setGeomancy('毒素','N',100);
+
         }
 
         this.frameCnt = (this.frameCnt+1) % (this.END_FRAME);

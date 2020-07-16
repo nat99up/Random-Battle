@@ -216,7 +216,7 @@ const skill_盤根錯節 = {
             var receiver = receiverBoards[i].occupy;
             if(receiver != null && provider.arenaId[0] != receiver.arenaId[0]){
                 receiver.hp.decrease(15);
-                provider.hp.decrease(-25);
+                provider.hp.decrease(-20);
             }
         }
         

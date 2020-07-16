@@ -28,8 +28,7 @@ export default class Arena {
         for(let i=0; i<this.rows; i++){
             for(let j=0; j<this.cols; j++){
                 let block = blocks.getChildren()[i*this.cols+j];
-                //this.boards[i][j] = new Board({y:this.top+(i+0.5)*this.cellSize, x:this.left+(j+0.5)*this.cellSize, block:block});
-                this.boards[i][j] = new Board({y:block.y, x:block.x, block:block});
+                this.boards[i][j] = new Board({y:block.y, x:block.x, block:block ,scene:this.scene});
             }
         }
 
@@ -128,7 +127,7 @@ export default class Arena {
 
             this.setBoard(combatant,distArray[idx].row, distArray[idx].col);
 
-            combatant.animateExecutor.setMoving(distPosition,Math.floor(this.scene.FIND_ENEMY_FRAME*1/2))
+            combatant.animateExecutor.setMoving(distPosition,Math.floor(this.scene.FIND_ENEMY_FRAME/2))
 
         })
 
@@ -144,8 +143,20 @@ export default class Arena {
         })
     }
 
+    BoardsGeomancyAnimation(){
+        for(let i=0; i<this.rows; i++){
+            for(let j=0; j<this.cols; j++){
+                this.boards[i][j].perfromAnimate();
+            }
+        }
+    }
+
     BoardsEffecting(){
-        
+        for(let i=0; i<this.rows; i++){
+            for(let j=0; j<this.cols; j++){
+                this.boards[i][j].runGeomancy();
+            }
+        }
     }
 
     CheckSkillLaunchable(){
@@ -197,6 +208,21 @@ export default class Arena {
                         combatant.skillTarget = null;
                     }   
                 }else if(combatant.activeSkill.targetType == TargetType.AOE){
+
+                    var targetArray = this._returnAllBoardsInRange(
+                        combatant.boardCoords,
+                        combatant.activeSkill.targetRange,
+                        (board)=>{return 1}
+                    );
+
+                    if(targetArray.length > 0){
+                        combatant.skillTarget = targetArray.map((target)=>{
+                            return this.boards[target.row][target.col];
+                        });
+                    }else{
+                        combatant.skillTarget = null;
+                    }   
+                }else if(combatant.activeSkill.targetType == TargetType.BOARD){
 
                     var targetArray = this._returnAllBoardsInRange(
                         combatant.boardCoords,
