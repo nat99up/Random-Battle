@@ -115,7 +115,6 @@ const lobby = {
             }
 
             this.teamIDText.text = 'Team ID : ' + LOCAL_TEAM_ID;
-
             const teamData = getTeamData(LOCAL_TEAM_ID)
 
             if(teamData){
@@ -126,9 +125,7 @@ const lobby = {
                     this.roleList[i].box.visible = LOCAL_TEAM.includes(i);
                 }
                 localStorage.setItem("LOCAL_TEAM_ID", LOCAL_TEAM_ID);
-
             }else{
-
                 LOCAL_TEAM = [];
                 console.log(LOCAL_TEAM_ID,'is not exist');
             }
@@ -145,13 +142,11 @@ const lobby = {
                 return ;
             }
             if(LOCAL_TEAM.length == 3){ 
-
                 setTeamData(LOCAL_TEAM_ID,LOCAL_TEAM);
                 this.scene.start('gameStart',{
                     "blueTeamId":LOCAL_TEAM_ID,
                     "blueTeam":LOCAL_TEAM
                 });
-
             }else{
                 alert('Please selected 3 Combatants');
             }
@@ -527,9 +522,24 @@ const leaderboard = {
     ,
     preload: function(){
         this.load.image('back','assets/back.png');
+
+        // 人物圖像
+        this.load.image('原型機0號','./assets/characters/Prototype_0.png');
+        this.load.image('原型機1號','./assets/characters/Prototype_1.png');
+        this.load.image('原型機2號','./assets/characters/Prototype_2.png');
+        this.load.image('角鬥士','./assets/characters/Gladiator.png');
+        this.load.image('海盜船長','./assets/characters/Captain.png');
+        this.load.image('怪鳥比莉','./assets/characters/Billy.png');
+        this.load.image('幸運仙子','./assets/characters/Fairy.png');
+        this.load.image('枯木大王','./assets/characters/Dead_Wood.png')
+        /* 新角色 */
+
+        this.load.image('block', 'assets/300x300.png');
     }
     ,
     create: function(){
+
+        this.showTeamNum = 8;
 
         this.back = this.add.image(350, 120, 'back').setScale(0.4);
         this.back.setInteractive({useHandCursor: true})
@@ -537,40 +547,59 @@ const leaderboard = {
             this.scene.start('lobby');
         })
 
-        this.showTeamNum = 8;
         var leaderboardArray = new Array();
 
         for(var id in this.databaseContent.teams){
             if(id == 'Guest') continue;
+            const teamArray = membersToTeamArray(this.databaseContent.teams[id].members);
             const win = this.databaseContent.teams[id].win;
             const lose = this.databaseContent.teams[id].lose;
             const winRate = isNaN(win/(win+lose)) ? 0 : win/(win+lose)*100;
-            leaderboardArray.push({teamId:id,win:win,lose:lose,winRate:winRate})
+            leaderboardArray.push({teamId:id,win:win,lose:lose,winRate:winRate,teamArray:teamArray});
         }
 
         leaderboardArray.sort((a,b)=>{return b.winRate-a.winRate});
 
-        var leaderboardText = 'Rank \n\n';
-
         for(let i=0; i<Math.min(leaderboardArray.length,this.showTeamNum); i++){
             let teamRec = leaderboardArray[i];
-            let rowText = '    ' + (i+1) + '       ' + teamRec.teamId + '   勝率: ' + teamRec.winRate.toFixed(2) + '%'
+            let rowText = teamRec.teamId + '   勝率: ' + teamRec.winRate.toFixed(2) + '%'
                             + '  ( ' + teamRec.win + ' / ' + (teamRec.win+teamRec.lose) + ' )';
-            leaderboardText = leaderboardText + rowText + '\n\n';
-        }
+            this.make.text({
+                x: 640-280,
+                y: 180+i*60,
+                text: i+1,
+                origin: { x: 1.0, y: 1.0 },
+                style: {
+                    font: 'bold 20px Arial',
+                    fill: 'white',
+                },
+            });
+            this.make.text({
+                x: 640+140,
+                y: 180+i*60,
+                text: rowText,
+                origin: { x: 1.0, y: 1.0 },
+                style: {
+                    font: 'bold 20px Arial',
+                    fill: 'white',
+                },
+            });
 
-        this.leaderboard = this.make.text({
-            x: 640,
-            y: 550,
-            text: leaderboardText,
-            origin: { x: 1.0, y: 1.0 },
-            style: {
-                font: 'bold 20px Arial',
-                fill: 'white',
-                align: 'left',
-            },
+            let blocks = this.add.group({ key: 'block', repeat:2, setScale: { x: 1/6, y: 1/6 } });
+            Phaser.Actions.GridAlign(blocks.getChildren(), {
+                width: 3,
+                cellWidth: 50,
+                cellHeight: 50,
+                x: 640+60,
+                y: 40+i*60,
+            });
+            for(let j=0 ; j<teamRec.teamArray.length ; j++){
+                let name = RegisterList[teamRec.teamArray[j]];
+                let block  = blocks.getChildren()[j];
+                this.add.image(block.x, block.y, name).setScale(30/256);
+            }
             
-        });
+        }
 
     }
 }
@@ -600,7 +629,7 @@ const settlement = {
 
         this.settlementboard = this.make.text({
             x: 640,
-            y: 250,
+            y: 300,
             text: settlementText,
             origin: { x: 1.0, y: 1.0 },
             style: {
