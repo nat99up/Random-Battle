@@ -165,7 +165,7 @@
         "hp":120,
         "mp":40,
         "atk":8,
-        "def":111,
+        "def":11,
         "taunt":1,
         "attackMode":"strike",
         "moveRange":[
