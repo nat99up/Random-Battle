@@ -102,12 +102,15 @@ const skill_羅馬斬 = {
         [1,0,1],
         [1,1,1]
     ],
+    selectTarget(receiverBoards){
+        const idx = Math.floor(Math.random() * receiverBoards.length);
+        return [receiverBoards[idx]];
+    }
+    ,
 
     effect:function(provider,receiverBoards){
         // receiver 為 Board Array
-
-        const idx = Math.floor(Math.random() * receiverBoards.length);
-        var receiver = receiverBoards[idx].occupy;
+        var receiver = receiverBoards[0].occupy;
         provider.hp.decrease(5);
         receiver.hp.decrease(30);
     }
@@ -127,12 +130,14 @@ const skill_海盜砲 = {
         [1,1,1,1,1],
         [1,1,1,1,1]
     ],
-
+    selectTarget(receiverBoards){
+        const idx = Math.floor(Math.random() * receiverBoards.length);
+        return [receiverBoards[idx]];
+    }
+    ,
     effect:function(provider,receiverBoards){
         // receiver 為 Board Array
-
-        const idx = Math.floor(Math.random() * receiverBoards.length);
-        var receiver = receiverBoards[idx].occupy;
+        var receiver = receiverBoards[0].occupy;
         provider.mp.decrease(-5);
         receiver.hp.decrease(20);
     }
@@ -175,16 +180,19 @@ const skill_祝福 = {
         [1,1,1,1,1],
         [1,1,1,1,1]
     ],
-
+    selectTarget(receiverBoards){
+        const idx = Math.floor(Math.random() * receiverBoards.length);
+        return [receiverBoards[idx]];
+    }
+    ,
     effect:function(provider,receiverBoards){
         // receiver 為 Board Array
 
-        const idx = Math.floor(Math.random() * receiverBoards.length);
-        var receiver = receiverBoards[idx].occupy;
+        var receiver = receiverBoards[0].occupy;
         
         receiver.core.atk += 1;
         receiver.mp.decrease(-20);
-        receiver.hp.decrease(-20);
+        receiver.hp.decrease(-10);
     }
 }
 
@@ -228,15 +236,18 @@ const skill_黑暗爆破 = {
         [1,0,1],
         [1,1,1]
     ],
-
-    effect:function(provider,receiverBoards){
-        // receiver 為 Board Array
+    selectTarget(receiverBoards){
         receiverBoards = receiverBoards.sort(
             (x,y) => {
                 let Xatkrange = x.occupy.attackRange.reduce(function(a,b) {return a.concat(b)}).reduce(function(a,b) { return a+b });
                 let Yatkrange = y.occupy.attackRange.reduce(function(a,b) {return a.concat(b)}).reduce(function(a,b) { return a+b });
                 return Yatkrange - Xatkrange;
             })
+        return [receiverBoards[0]];
+    }
+    ,
+    effect:function(provider,receiverBoards){
+        // receiver 為 Board Array
         var receiver = receiverBoards[0].occupy;
         var damage = 5 * receiver.attackRange.reduce(function(a,b) {return a.concat(b)}).reduce(function(a,b) { return a+b });
         damage = Math.min(damage,45);

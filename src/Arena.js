@@ -189,6 +189,7 @@ export default class Arena {
                         combatant.skillTarget = targetArray.map((target)=>{
                             return this.boards[target.row][target.col];
                         });
+                        combatant.skillTarget = combatant.activeSkill.selectTarget(combatant.skillTarget);
                     }else{
                         combatant.skillTarget = null;
                     }   
@@ -204,6 +205,7 @@ export default class Arena {
                         combatant.skillTarget = targetArray.map((target)=>{
                             return this.boards[target.row][target.col];
                         });
+                        combatant.skillTarget = combatant.activeSkill.selectTarget(combatant.skillTarget);
                     }else{
                         combatant.skillTarget = null;
                     }   
