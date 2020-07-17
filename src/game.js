@@ -19,6 +19,7 @@ var RegisterList = [
 //var LOCAL_TEAM_ID = localStorage.getItem('LOCAL_TEAM_ID') ? localStorage.getItem('LOCAL_TEAM_ID') : 'Guest';
 var LOCAL_TEAM_ID = 'Guest'
 var LOCAL_TEAM = [];
+var INIFINITY_MODE = false;
 
 
 const lobby = {
@@ -111,8 +112,13 @@ const lobby = {
             LOCAL_TEAM_ID = prompt("請輸入隊伍ID:", "Guest");
         
             if(LOCAL_TEAM_ID == null || LOCAL_TEAM_ID[0] == '_'){
-                alert('未輸入或含有非法字元(_)')
+                alert('未輸入或含有非法字元(_)');
                 LOCAL_TEAM_ID = "Guest";
+                return ;
+            }else if(LOCAL_TEAM_ID == 'infinity'){
+                alert('開啟無限隨機模式');
+                LOCAL_TEAM_ID = "Guest";
+                INIFINITY_MODE = true
                 return ;
             }
 
@@ -195,6 +201,18 @@ const lobby = {
     update: function(){
 
         this.frameCnt += 1;
+
+        if(INIFINITY_MODE && this.frameCnt >= 60){
+            let a = getDatabaseContent();
+            if( a == false){
+                return ;
+            }
+            const blueTeamData = pickOpponent('Guest');
+            this.scene.start('gameStart',{
+                "blueTeamId":blueTeamData.id,
+                "blueTeam":blueTeamData.array
+            });
+        }
     }
 }
 
