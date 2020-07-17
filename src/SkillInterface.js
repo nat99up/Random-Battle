@@ -124,11 +124,11 @@ const skill_海盜砲 = {
     targetType: TargetType.ENEMY,
 
     targetRange: [
-        [1,1,1,1,1],
-        [1,1,1,1,1],
+        [0,0,1,0,0],
+        [0,1,1,1,0],
         [1,1,0,1,1],
-        [1,1,1,1,1],
-        [1,1,1,1,1]
+        [0,1,1,1,0],
+        [0,0,1,0,0]
     ],
     selectTarget(receiverBoards){
         const idx = Math.floor(Math.random() * receiverBoards.length);
@@ -192,7 +192,7 @@ const skill_祝福 = {
         
         receiver.core.atk += 1;
         receiver.mp.decrease(-15);
-        receiver.hp.decrease(-5);
+        receiver.hp.decrease(-15);
     }
 }
 
