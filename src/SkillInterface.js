@@ -191,8 +191,8 @@ const skill_祝福 = {
         var receiver = receiverBoards[0].occupy;
         
         receiver.core.atk += 1;
-        receiver.mp.decrease(-20);
-        receiver.hp.decrease(-10);
+        receiver.mp.decrease(-15);
+        receiver.hp.decrease(-5);
     }
 }
 
