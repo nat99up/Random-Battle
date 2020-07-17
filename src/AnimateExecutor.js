@@ -133,6 +133,17 @@ export default class AnimateExecutor{
                 })
             }
             
+        }else if(this.combatant.core.activeSkillName == '黑暗爆破'){
+
+            this.skillSprite = this.scene.add.sprite(this.combatant.x, this.combatant.y, 'dark').setScale(120/196);
+            this.skillSprite.visible = false;
+            this.scene.anims.create({
+                key: this.combatant.core.activeSkillName,
+                frames: this.scene.anims.generateFrameNumbers('dark', { start: 0, end: 9 }),
+                frameRate: 15,
+                repeat: 0
+            })
+
         }else{ /* 新角色技能 */
             this.skillSprite = null;
         }

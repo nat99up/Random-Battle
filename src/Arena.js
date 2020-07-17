@@ -240,7 +240,6 @@ export default class Arena {
                 }
                 
                 if(combatant.skillTarget != null){
-                    //const targetPosition = {x:combatant.skillTarget.x,y:combatant.skillTarget.y};
                     const targetPosition = combatant.skillTarget.map((board)=>{
                         return {x:board.x ,y:board.y};
                     });

@@ -11,7 +11,8 @@ var RegisterList = [
     '海盜船長',
     '怪鳥比莉',
     '幸運仙子',
-    '枯木大王'
+    '枯木大王',
+    '宗師血鬼'
     /* 新角色 */
 ]
 
@@ -39,7 +40,8 @@ const lobby = {
         this.load.image('海盜船長','./assets/characters/Captain.png');
         this.load.image('怪鳥比莉','./assets/characters/Billy.png');
         this.load.image('幸運仙子','./assets/characters/Fairy.png');
-        this.load.image('枯木大王','./assets/characters/Dead_Wood.png')
+        this.load.image('枯木大王','./assets/characters/Dead_Wood.png');
+        this.load.image('宗師血鬼','./assets/characters/Vampire.png');
         /* 新角色 */
 
         // 場地、隊伍
@@ -210,7 +212,8 @@ const introduce = {
         this.load.image('海盜船長','./assets/characters/Captain.png');
         this.load.image('怪鳥比莉','./assets/characters/Billy.png');
         this.load.image('幸運仙子','./assets/characters/Fairy.png');
-        this.load.image('枯木大王','./assets/characters/Dead_Wood.png')
+        this.load.image('枯木大王','./assets/characters/Dead_Wood.png');
+        this.load.image('宗師血鬼','./assets/characters/Vampire.png');
         /* 新角色 */
 
         // 角色介紹
@@ -222,6 +225,7 @@ const introduce = {
         this.load.image('怪鳥比莉intro','./assets/characters/intro/Billy_intro.png');
         this.load.image('幸運仙子intro','./assets/characters/intro/Fairy_intro.png');
         this.load.image('枯木大王intro','./assets/characters/intro/Dead_Wood_intro.png')
+        this.load.image('宗師血鬼intro','./assets/characters/intro/Vampire_intro.png')
         /* 新角色 */
 
         this.load.image('block', 'assets/300x300.png');
@@ -305,7 +309,8 @@ const gameStart = {
         this.load.image('海盜船長','./assets/characters/Captain.png');
         this.load.image('怪鳥比莉','./assets/characters/Billy.png');
         this.load.image('幸運仙子','./assets/characters/Fairy.png');
-        this.load.image('枯木大王','./assets/characters/Dead_Wood.png')
+        this.load.image('枯木大王','./assets/characters/Dead_Wood.png');
+        this.load.image('宗師血鬼','./assets/characters/Vampire.png');
         /* 新角色 */
 
         // 場地、隊伍
@@ -326,6 +331,7 @@ const gameStart = {
         this.load.spritesheet('storm', './assets/skill/pipo-btleffect039.png', {frameWidth: 120, frameHeight: 120});
         this.load.spritesheet('blessing', './assets/skill/pipo-btleffect007.png', {frameWidth: 120, frameHeight: 120});
         this.load.spritesheet('root', './assets/skill/pipo-btleffect118i.png', {frameWidth: 120, frameHeight: 120});
+        this.load.spritesheet('dark', './assets/skill/pipo-btleffect175_192.png', {frameWidth: 196, frameHeight: 196});
         /* 新角色技能*/
 
         // 地形動畫
@@ -489,7 +495,7 @@ const gameStart = {
             }
         }
 
-        if(this.roundCnt == 60 && this.END_FRAME > 0){
+        if(this.roundCnt == 45 && this.END_FRAME > 0){
 
             this.Arena.boards[0][0].setGeomancy('毒素','N',100);
             this.Arena.boards[0][1].setGeomancy('毒素','N',100);
@@ -532,6 +538,7 @@ const leaderboard = {
         this.load.image('怪鳥比莉','./assets/characters/Billy.png');
         this.load.image('幸運仙子','./assets/characters/Fairy.png');
         this.load.image('枯木大王','./assets/characters/Dead_Wood.png')
+        this.load.image('宗師血鬼','./assets/characters/Vampire.png');
         /* 新角色 */
 
         this.load.image('block', 'assets/300x300.png');

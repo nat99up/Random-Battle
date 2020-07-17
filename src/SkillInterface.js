@@ -136,7 +136,6 @@ const skill_海盜砲 = {
         provider.mp.decrease(-5);
         receiver.hp.decrease(20);
     }
-
 }
 
 const skill_暴風 = {
@@ -160,10 +159,7 @@ const skill_暴風 = {
                 receiver.hp.decrease(20);
             }
         }
-
-        
     }
-
 }
 
 const skill_祝福 = {
@@ -188,9 +184,8 @@ const skill_祝福 = {
         
         receiver.core.atk += 1;
         receiver.mp.decrease(-20);
-
+        receiver.hp.decrease(-20);
     }
-
 }
 
 const skill_盤根錯節 = {
@@ -218,8 +213,34 @@ const skill_盤根錯節 = {
                 receiver.hp.decrease(15);
                 provider.hp.decrease(-20);
             }
-        }
-        
+        }   
+    }
+}
+
+const skill_黑暗爆破 = {
+
+    skillType: SkillType.MAGIC,
+
+    targetType: TargetType.ENEMY,
+
+    targetRange: [
+        [1,1,1],
+        [1,0,1],
+        [1,1,1]
+    ],
+
+    effect:function(provider,receiverBoards){
+        // receiver 為 Board Array
+        receiverBoards = receiverBoards.sort(
+            (x,y) => {
+                let Xatkrange = x.occupy.attackRange.reduce(function(a,b) {return a.concat(b)}).reduce(function(a,b) { return a+b });
+                let Yatkrange = y.occupy.attackRange.reduce(function(a,b) {return a.concat(b)}).reduce(function(a,b) { return a+b });
+                return Yatkrange - Xatkrange;
+            })
+        var receiver = receiverBoards[0].occupy;
+        var damage = 5 * receiver.attackRange.reduce(function(a,b) {return a.concat(b)}).reduce(function(a,b) { return a+b });
+        damage = Math.min(damage,45);
+        receiver.hp.decrease(damage);
     }
 
 }
@@ -236,7 +257,8 @@ SkillInstaceDict = {
     skill_海盜砲:skill_海盜砲,
     skill_暴風:skill_暴風,
     skill_祝福:skill_祝福,
-    skill_盤根錯節:skill_盤根錯節
+    skill_盤根錯節:skill_盤根錯節,
+    skill_黑暗爆破:skill_黑暗爆破
     /* 新角色技能  */
 }
 
