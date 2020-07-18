@@ -49,7 +49,7 @@ export default class BattleCalculator {
         for(let i=0; i<receiverBoards.length; i++){
 
             if(receivers[i] !=null && uninjureds[i] - receivers[i].hp.value > 0){
-                receivers[i].mp.decrease(Math.floor(receivers[i].mp.max*0.05));
+                receivers[i].mp.decrease(-Math.floor(receivers[i].mp.max*0.05));
                 this.logging.damages[this.logIdx[provider.arenaId]] += uninjureds[i]-receivers[i].hp.value;
                 this.logging.injures[this.logIdx[receivers[i].arenaId]] += uninjureds[i]-receivers[i].hp.value;
             }
