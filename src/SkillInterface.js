@@ -189,9 +189,12 @@ const skill_祝福 = {
         // receiver 為 Board Array
 
         var receiver = receiverBoards[0].occupy;
-        
-        receiver.core.atk += 1;
-        receiver.core.def += 1;
+
+        if(Math.random() > 0.5){
+            receiver.core.atk += 1;
+        }else{
+            receiver.core.def += 1;
+        }
         receiver.mp.decrease(-15);
         receiver.hp.decrease(-15);
     }
