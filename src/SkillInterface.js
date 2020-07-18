@@ -191,6 +191,7 @@ const skill_祝福 = {
         var receiver = receiverBoards[0].occupy;
         
         receiver.core.atk += 1;
+        receiver.core.def += 1;
         receiver.mp.decrease(-15);
         receiver.hp.decrease(-15);
     }
@@ -213,8 +214,6 @@ const skill_盤根錯節 = {
     ],
 
     effect:function(provider,receiverBoards){
-        // receiver 可能為 Combatant 或 Board
-
         for(let i=0; i<receiverBoards.length; i++){
             var receiver = receiverBoards[i].occupy;
             if(receiver != null && provider.arenaId[0] != receiver.arenaId[0]){
@@ -250,7 +249,7 @@ const skill_黑暗爆破 = {
         // receiver 為 Board Array
         var receiver = receiverBoards[0].occupy;
         var damage = 5 * receiver.attackRange.reduce(function(a,b) {return a.concat(b)}).reduce(function(a,b) { return a+b });
-        damage = Math.min(damage,45);
+        damage = Math.min(damage,40);
         receiver.hp.decrease(damage);
     }
 

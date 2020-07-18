@@ -25,7 +25,7 @@
         "id":1,
         "name":"原型機1號",
         "hp":100,
-        "mp":50,
+        "mp":45,
         "atk":10,
         "def":10,
         "taunt":1,
@@ -138,10 +138,10 @@
     {
         "id":6,
         "name":"幸運仙子",
-        "hp":80,
+        "hp":90,
         "mp":25,
         "atk":5,
-        "def":10,
+        "def":8,
         "taunt":1,
         "attackMode":"strike",
         "moveRange":[
@@ -162,10 +162,10 @@
     {
         "id":7,
         "name":"枯木大王",
-        "hp":120,
+        "hp":140,
         "mp":45,
         "atk":8,
-        "def":11,
+        "def":10,
         "taunt":1,
         "attackMode":"strike",
         "moveRange":[
@@ -184,8 +184,8 @@
     {
         "id":8,
         "name":"宗師血鬼",
-        "hp":95,
-        "mp":30,
+        "hp":105,
+        "mp":35,
         "atk":10,
         "def":10,
         "taunt":1,
